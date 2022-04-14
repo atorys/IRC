@@ -23,7 +23,7 @@ class Server {
 		std::map<int, User*>				_users;
 
 	public:
-		Server(std::string const& port, std::string const& password);
+		Server(std::string const&, std::string const&);
 		~Server();
 
 		void	start();
@@ -31,9 +31,11 @@ class Server {
 
 		void	pass();
 		void	user();
-
-		int		max_socket() const;
+		void	nick();
 
 	protected:
 		void	Init();
+		void 	Add(int);
+		void 	Remove(int);
+		void 	Receive(int);
 };

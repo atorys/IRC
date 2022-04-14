@@ -12,6 +12,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <poll.h>
+#include <vector>
 
 Server::Server(const std::string &port, const std::string &password)
 				:
@@ -19,6 +21,8 @@ Server::Server(const std::string &port, const std::string &password)
 				_password(password),
 				_socket(-1) {
 	_commands["PASS"] = &Server::pass;
+//	_commands["USER"] = &Server::user;
+//	_commands["NICK"] = &Server::nick;
 }
 
 Server::~Server() {}
@@ -60,75 +64,93 @@ void Server::Init() {
 	std::cout << "server init \033[32m[SUCCESS]\033[0m\n";
 	char buff[50];
 	gethostname(&buff[0], 50);
-	printf("server started as:\033[32m%s\033[0m:\033[32m%s\033[0m\n", buff, _port.c_str());
+	printf("server started as:\033[32m%s\033[0m:\033[32m%s\033[0m\n\n", buff, _port.c_str());
 
-}
-
-int Server::max_socket() const {
-	int tmp = std::max_element(_users.begin(), _users.end())->first;
-	return (_socket < tmp ? tmp : _socket);
 }
 
 void Server::start() {
+
 	Init();
+
 	if (listen(_socket, 10) < 0) // marks socket as PASSIVE to accept the connections
 		throw std::runtime_error("listen socket failure\n");
 
-	fd_set	master, readers, writers;
-	FD_ZERO(&master);
-	FD_ZERO(&readers);
-	FD_ZERO(&writers);
-	FD_SET(_socket, &master);
+	if (fcntl(_socket, F_SETFL, O_NONBLOCK) < 0)
+		throw std::runtime_error("fcntl nonblock failure\n");
 
-	char msg[42];
+	std::vector<pollfd>					polls;
+	std::vector<pollfd>::iterator		iter;
 
-	for (;;) {
-		readers = writers = master;
-		if (select(max_socket() + 1, &readers, &writers, nullptr, nullptr) < 0)
-			continue ;
+	polls.push_back((pollfd){_socket, POLLIN, 0});
+	for (;;)
+	{
+		if (poll(&(*(polls.begin())), polls.size(), -1) == -1)
+			throw std::runtime_error("poll failure\n");
 
-		for (int i = 0; i <= max_socket(); i++) {
-			if (FD_ISSET(i, &readers)) {
-				if (i == _socket)
-				{
-					struct sockaddr_in clientaddr;
-					socklen_t len = sizeof(clientaddr);
-					bzero(&msg, sizeof(msg));
-					int fd = accept(_socket, (struct sockaddr *)&clientaddr, &len);
-					_users[fd] = new User(fd);
-					FD_SET(fd, &master);
-					std::cout << "new client : " << fd << "\n";
-					break;
-				}
-				else
-				{
-					int return_recv = 10;
-					while (return_recv == 10 || msg[strlen(msg) - 1] != '\n')
-					{
-						return_recv = recv(i, msg+ strlen(msg), 10, 0);
-						if (return_recv <= 0)
-							break;
-					}
-					if (return_recv <= 0)
-					{
-						bzero(&msg, sizeof(msg));
-						std::cout << "client " << i << "just left\n";
-						_users.erase(i);
-						FD_CLR(i, &master);
-						close(i);
-						break ;
-					}
-					else {
-						std::cout << "user " << i << ": " << msg;
-						bzero(&msg, sizeof(msg));
-					}
-				}
+		if (polls[0].revents & POLLIN)
+		{
+			struct sockaddr_in	clientaddr;
+			socklen_t			len = sizeof(clientaddr);
+			int					client_socket = accept(_socket, (struct sockaddr *) &clientaddr, &len);
+
+			if (fcntl(client_socket, F_SETFL, O_NONBLOCK) < 0)
+				throw std::runtime_error("fcntl nonblock failure\n");
+
+			polls.push_back((pollfd){client_socket, POLLIN, 0});
+			Add(client_socket);
+		}
+
+		for (iter = polls.begin() + 1; iter != polls.end(); ++iter)
+		{
+			if (iter->revents & POLLHUP) {
+				polls.erase(iter);
+				Remove(iter->fd);
+				break ;
 			}
+			if (iter->revents & POLLIN)
+				Receive(iter->fd);
 		}
 	}
 }
 
 
+
 void Server::pass() {
- 
+
+}
+
+void Server::Add(int client_socket) {
+	_users[client_socket] = new User(client_socket);
+	_users[client_socket]->send_massage_to( "NICK: ");
+	std::cout << "new client : " << client_socket << "\n";
+}
+
+void Server::Remove(int client_socket) {
+	// delete from channels +
+	_users.erase(client_socket);
+	std::cout << "client " << client_socket << " just left\n";
+	close(client_socket);
+}
+
+void Server::Receive(int client_socket) {
+	std::pair<std::string, std::string>		request;
+	std::string::iterator 					iter;
+
+	char msg[42];
+	int return_recv = 10;
+	while (return_recv == 10 || request.second.find("\n") != std::string::npos) {
+		bzero(&msg, sizeof(msg));
+		return_recv = recv(client_socket, &msg, 10, 0);
+		if (return_recv <= 0)
+			break;
+		request.second += msg;
+	}
+	iter = request.second.begin();
+	if (request.second.find(" ") != std::string::npos)
+		request.first.insert(request.first.begin(), iter, iter + request.second.find(" "));
+	request.second.erase(iter, iter + request.first.size());
+
+	std::cout << "user " << client_socket << ": " << request.first << " : " << request.second;
+
+//	(this->*commandPtr))();
 }

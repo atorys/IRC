@@ -5,7 +5,7 @@
 #pragma once
 
 #include "iostream"
-
+#include <poll.h>
 
 class User {
 	private:
@@ -13,12 +13,15 @@ class User {
 		std::string		_nickname;
 		std::string		_username;
 	public:
-		User(int socket);
+		User(int);
 		~User();
 
 		std::string const&	get_nickname() const;
 		std::string const&	get_username() const;
+		const int&			get_socket() const;
 
-		void 				set_nickname(const std::string&	nickname);
-		void 				set_username(const std::string&	username);
+		void 				set_nickname(const std::string&);
+		void 				set_username(const std::string&);
+
+		void 				send_massage_to(const std::string&) const;
 };
