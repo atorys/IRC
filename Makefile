@@ -2,15 +2,21 @@ NAME	=	ircserv
 
 SRCS	=	./Sources/app/main.cpp \
 			./Sources/server/Server.cpp\
+			./Sources/service/UsersService.cpp\
+			./Sources/service/Postman.cpp\
 			./Sources/models/User.cpp
 
 HEADERS	=	./Sources/server/Server.hpp \
+			./Sources/service/Service.hpp
+			./Sources/service/UsersService.hpp
+			./Sources/service/Postman.hpp
 			./Sources/models/User.hpp
 
 
 VPATH	=	./Sources/ \
 			./Sources/app \
 			./Sources/models \
+			./Sources/service \
 			./Sources/server
 
 OBJ_DIR	=	./obj/

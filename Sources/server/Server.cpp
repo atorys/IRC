@@ -16,16 +16,13 @@
 #include <vector>
 #include <cstring>
 #include <cstdio>
+#include "../service/UsersService.hpp"
 
 Server::Server(const std::string &port, const std::string &password)
 				:
 				_port(port),
-				_password(password),
-				_socket(-1) {
-	_commands["PASS"] = &Server::pass;
-//	_commands["USER"] = &Server::user;
-//	_commands["NICK"] = &Server::nick;
-}
+				_socket(-1),
+				_service(new UsersService(password)) {}
 
 Server::~Server() {}
 
@@ -80,79 +77,65 @@ void Server::start() {
 	if (fcntl(_socket, F_SETFL, O_NONBLOCK) < 0)
 		throw std::runtime_error("fcntl nonblock failure\n");
 
-	std::vector<pollfd>					polls;
 	std::vector<pollfd>::iterator		iter;
 
-	polls.push_back((pollfd){_socket, POLLIN, 0});
+	_polls.push_back((pollfd){_socket, POLLIN, 0});
 	for (;;)
 	{
-		if (poll(&(*(polls.begin())), polls.size(), -1) == -1)
-			throw std::runtime_error("poll failure\n");
+		if (poll(&(*(_polls.begin())), _polls.size(), -1) == -1)
+            throw std::runtime_error("poll failure\n");
 
-		if (polls[0].revents & POLLIN)
-		{
-			struct sockaddr_in	clientaddr;
-			socklen_t			len = sizeof(clientaddr);
-			int					client_socket = accept(_socket, (struct sockaddr *) &clientaddr, &len);
+		if (_polls[0].revents & POLLIN)
+		    Add();
 
-			if (fcntl(client_socket, F_SETFL, O_NONBLOCK) < 0)
-				throw std::runtime_error("fcntl nonblock failure\n");
-
-			polls.push_back((pollfd){client_socket, POLLIN, 0});
-			Add(client_socket);
-		}
-
-		for (iter = polls.begin() + 1; iter != polls.end(); ++iter)
-		{
-			if (iter->revents & POLLHUP) {
-				polls.erase(iter);
-				Remove(iter->fd);
-				break ;
-			}
-			if (iter->revents & POLLIN)
-				Receive(iter->fd);
-		}
+        for (iter = _polls.begin() + 1; iter != _polls.end(); ++iter) {
+            if (iter->revents & POLLHUP) {
+                Remove(iter);
+                break;
+            } else if (iter->revents & POLLIN) {
+                Receive(iter->fd);
+            }
+        }
 	}
 }
 
+void Server::Add() {
+    struct sockaddr_in	clientaddr;
+    socklen_t			len = sizeof(clientaddr);
+    int					client_socket = accept(_socket, (struct sockaddr *) &clientaddr, &len);
 
+    if (fcntl(client_socket, F_SETFL, O_NONBLOCK) < 0)
+        throw std::runtime_error("fcntl nonblock failure\n");
 
-void Server::pass() {
-
+    _polls.push_back((pollfd){client_socket, POLLIN, 0});
+    _service->addUser(client_socket);
 }
 
-void Server::Add(int client_socket) {
-	_users[client_socket] = new User(client_socket);
-	_users[client_socket]->send_massage_to( "NICK: ");
-	std::cout << "new client : " << client_socket << "\n";
-}
-
-void Server::Remove(int client_socket) {
-	// delete from channels +
-	_users.erase(client_socket);
-	std::cout << "client " << client_socket << " just left\n";
-	close(client_socket);
+void Server::Remove(std::vector<pollfd>::iterator pollsIter) {
+    _polls.erase(pollsIter);
+    _service->removeUser(pollsIter->fd);
+    close(pollsIter->fd);
 }
 
 void Server::Receive(int client_socket) {
-	std::pair<std::string, std::string>		request;
-	std::string::iterator 					iter;
+    std::string             request;
 
-	char msg[42];
+	char msg[510];
 	int return_recv = 10;
-	while (return_recv == 10 || request.second.find("\n") != std::string::npos) {
+	while (return_recv == 10 || request.find("\n") != std::string::npos) {
 		bzero(&msg, sizeof(msg));
 		return_recv = recv(client_socket, &msg, 10, 0);
 		if (return_recv <= 0)
 			break;
-		request.second += msg;
+		request += msg;
 	}
-	iter = request.second.begin();
-	if (request.second.find(" ") != std::string::npos)
-		request.first.insert(request.first.begin(), iter, iter + request.second.find(" "));
-	request.second.erase(iter, iter + request.first.size());
+	std::cout << "user " << client_socket << ": " << request;
+	_service->processRequest(request);
+}
 
-	std::cout << "user " << client_socket << ": " << request.first << " : " << request.second;
-
-//	(this->*commandPtr))();
+void Server::stop() {
+    for (std::vector<pollfd>::iterator iter = _polls.begin(); iter != _polls.end(); ++iter) {
+        Remove(iter);
+    }
+    delete _service;
 }

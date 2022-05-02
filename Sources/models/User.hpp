@@ -22,6 +22,4 @@ class User {
 
 		void 				set_nickname(const std::string&);
 		void 				set_username(const std::string&);
-
-		void 				send_massage_to(const std::string&) const;
 };

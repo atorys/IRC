@@ -10,5 +10,6 @@ int main(int ac, char **av)
 
 	Server	irc_server(av[1], av[2]);
 	irc_server.start();
+	irc_server.stop();
 	return 0;
 }

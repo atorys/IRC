@@ -5,37 +5,28 @@
 #pragma once
 
 #include <iostream>
-#include <map>
-#include "../models/User.hpp"
-
-class User;
+#include <sys/poll.h>
+#include <vector>
+#include "../service/Service.hpp"
 
 class Server {
 
-	typedef	void (Server::*commandPtr)();
-
 	private:
 		const std::string&					_port;
-		const std::string&					_password;
 		int									_socket;
-
-		std::map<std::string, commandPtr>	_commands;
-		std::map<int, User*>				_users;
+		std::vector<pollfd>					_polls;
+		Service*                            _service;
 
 	public:
 		Server(std::string const&, std::string const&);
 		~Server();
 
 		void	start();
-//		void	stop();
-
-		void	pass();
-		void	user();
-		void	nick();
+		void	stop();
 
 	protected:
 		void	Init();
-		void 	Add(int);
-		void 	Remove(int);
+		void	Add();
+		void	Remove(std::vector<pollfd>::iterator);
 		void 	Receive(int);
 };
