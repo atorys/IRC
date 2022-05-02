@@ -14,6 +14,8 @@
 #include <netdb.h>
 #include <poll.h>
 #include <vector>
+#include <cstring>
+#include <cstdio>
 
 Server::Server(const std::string &port, const std::string &password)
 				:

@@ -1,10 +1,10 @@
 #include <iostream>
-#include "Sources/Server.hpp"
+#include "../server/Server.hpp"
 
 int main(int ac, char **av)
 {
 	if (ac != 3) {
-		std::cerr << "try \n./ft_irc <PORT> <PASSWORD> \n";
+		std::cerr << "./ircserv <PORT> <PASSWORD>\n";
 		exit(EXIT_FAILURE);
 	}
 
