@@ -9,7 +9,7 @@ class Service {
 public:
     virtual void    addUser(int) = 0;
     virtual void    removeUser(int) = 0;
-    virtual void    processRequest(std::string) = 0;
+    virtual void    processRequest(std::string, int client_socket) = 0;
 
     virtual ~Service() {}
 };
