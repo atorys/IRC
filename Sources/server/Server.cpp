@@ -120,7 +120,7 @@ void Server::Remove(std::vector<pollfd>::iterator pollsIter) {
 void Server::Receive(int client_socket) {
     std::string             request;
 
-	char msg[510];
+	char msg[11];
 	int return_recv = 10;
 	while (return_recv == 10 || request.find("\n") != std::string::npos) {
 		bzero(&msg, sizeof(msg));
@@ -129,8 +129,7 @@ void Server::Receive(int client_socket) {
 			break;
 		request += msg;
 	}
-	std::cout << "user " << client_socket << ": " << request;
-	_service->processRequest(request);
+	_service->processRequest(request, client_socket);
 }
 
 void Server::stop() {

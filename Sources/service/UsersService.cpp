@@ -28,26 +28,48 @@ void UsersService::removeUser(int client_socket) {
     std::cout << "client " << client_socket << " just left\n";
 }
 
-void UsersService::processRequest(std::string request) {
+void UsersService::processRequest(std::string request, int client_socket) {
+    if (_users[client_socket]->get_username() == "")
+        std::cout << "user " << client_socket << ": " << request;
+    else
+        std::cout << _users[client_socket]->get_username() << ": " << request;
     std::vector<std::string> arguments;
-
     if (request.find("\n") != std::string::npos) {
         request.erase(request.find("\n"));
     }
-    while (request.find(" ") != std::string::npos) {
-//        arguments.push_back(request.copy(request.begin(), request.find(" ")));
-//        request.erase(request.begin(), request.find(" "));
+    if (request.find(" ") == MISSING_CHARACTER_IN_STRING){
+        arguments.push_back(request);
+        request.clear();
+    } else {
+        arguments.push_back(request.substr(0, request.find(" ")));
+        request.erase(0, request.find(" ") + 1);
+        if (request.find(" ") == MISSING_CHARACTER_IN_STRING)
+            arguments.push_back(request);
+        else {
+            while (request.find(" ") != std::string::npos) {
+                arguments.push_back(request.substr(0, request.find(" ")));
+                request.erase(0, request.find(" ") + 1);
+                if ((request.find(" ") == MISSING_CHARACTER_IN_STRING) || (request.find(":") < request.find(" "))) {
+                    arguments.push_back(request);
+                    break;
+                }
+            }
+        }
     }
-    arguments.push_back(request);
     if (_commands.find(arguments[0]) != _commands.end()) {
-        (this->*_commands[arguments[0]])(arguments);
+        (this->*_commands[arguments[0]])(arguments, client_socket);
     }
 }
 
-void UsersService::user(std::vector<std::string> args) {
-    std::cout << "user called\n";
+void UsersService::user(std::vector<std::string> args, int client_socket) {
+    if (args.size() == 5){
+        args[4].erase(0, args[4].find(":") + 1);
+        _users[client_socket]->set_realname(args[4]);
+        _users[client_socket]->set_username(args[1]);
+    }
 }
 
-void UsersService::pass(std::vector<std::string> args) {
+void UsersService::pass(std::vector<std::string> args, int client_socket) {
     std::cout << "pass called\n";
 }
+
