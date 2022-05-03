@@ -24,8 +24,12 @@ void UsersService::addUser(int client_socket) {
 
 void UsersService::removeUser(int client_socket) {
     // delete from channels +
+    if (_users[client_socket]->get_username() == "")
+        std::cout << "user " << client_socket << " just left\n";
+    else
+        std::cout << _users[client_socket]->get_username() << " just left\n";
     _users.erase(client_socket);
-    std::cout << "client " << client_socket << " just left\n";
+    
 }
 
 void UsersService::processRequest(std::string request, int client_socket) {
@@ -37,19 +41,19 @@ void UsersService::processRequest(std::string request, int client_socket) {
     if (request.find("\n") != std::string::npos) {
         request.erase(request.find("\n"));
     }
-    if (request.find(" ") == MISSING_CHARACTER_IN_STRING){
+    if (request.find(" ") == std::string::npos){
         arguments.push_back(request);
         request.clear();
     } else {
         arguments.push_back(request.substr(0, request.find(" ")));
         request.erase(0, request.find(" ") + 1);
-        if (request.find(" ") == MISSING_CHARACTER_IN_STRING)
+        if (request.find(" ") == std::string::npos)
             arguments.push_back(request);
         else {
             while (request.find(" ") != std::string::npos) {
                 arguments.push_back(request.substr(0, request.find(" ")));
                 request.erase(0, request.find(" ") + 1);
-                if ((request.find(" ") == MISSING_CHARACTER_IN_STRING) || (request.find(":") < request.find(" "))) {
+                if ((request.find(" ") == std::string::npos) || (request.find(":") < request.find(" "))) {
                     arguments.push_back(request);
                     break;
                 }
@@ -70,6 +74,6 @@ void UsersService::user(std::vector<std::string> args, int client_socket) {
 }
 
 void UsersService::pass(std::vector<std::string> args, int client_socket) {
-    std::cout << "pass called\n";
+    removeUser(client_socket);
 }
 
