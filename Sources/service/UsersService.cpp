@@ -70,10 +70,12 @@ void UsersService::user(std::vector<std::string> args, int client_socket) {
         args[4].erase(0, args[4].find(":") + 1);
         _users[client_socket]->set_realname(args[4]);
         _users[client_socket]->set_username(args[1]);
+    } else {
+        _postman.sendReply(_users[client_socket], ERR_NEEDMOREPARAMS);
     }
 }
 
 void UsersService::pass(std::vector<std::string> args, int client_socket) {
-    removeUser(client_socket);
+    // removeUser(client_socket);
 }
 

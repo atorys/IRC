@@ -8,10 +8,12 @@
 #define RPL_MOTDSTART   ":- <server> Message of the day - "
 #define RPL_MOTD        ":- <Have a nice day and log in to connect!>"
 #define RPL_ENDOFMOTD   ":End of /MOTD command"
+#define ERR_NEEDMOREPARAMS "<USER> :Not enough parameters"
 
 Postman::Postman() {
     _replies[375] = RPL_MOTDSTART;
     _replies[372] = RPL_MOTD;
+    _replies[461] = ERR_NEEDMOREPARAMS;
     _replies[376] = RPL_ENDOFMOTD;
 
 //    _replies[] = ERR_NEEDMOREPARAMS;
