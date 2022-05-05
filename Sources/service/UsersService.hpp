@@ -10,12 +10,6 @@
 #include <map>
 #include <vector>
 
-#define RPL_MOTDSTART   375
-#define RPL_MOTD        372
-#define RPL_ENDOFMOTD   376
-#define ERR_NEEDMOREPARAMS 461
-#define ERR_ALREADYREGISTRED 462
-
 class User;
 
 class UsersService : public Service {
@@ -25,8 +19,6 @@ class UsersService : public Service {
     const std::string&					_password;
     std::map<int, User*>				_users;
     std::map<std::string, commandPtr>   _commands;
-    Postman                             _postman;
-
 public:
 
     UsersService(const std::string&);
