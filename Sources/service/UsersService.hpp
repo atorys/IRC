@@ -26,6 +26,7 @@ public:
 
     void    addUser(int);
     void    removeUser(int);
+    User*   findUserByNickname(const std::string&);
     void    processRequest(std::string request, int client_socket);
 
 
@@ -33,7 +34,9 @@ protected:
 
     void	pass(std::vector<std::string>, int);
     void	user(std::vector<std::string>, int);
-    void	nick(std::vector<std::string>, int){};
+    void	nick(std::vector<std::string>, int);
     void	join(std::vector<std::string>, int){};
     void	kick(std::vector<std::string>, int){};
+    void	privmsg(std::vector<std::string>, int){};
+    void	notice(std::vector<std::string>, int){};
 };

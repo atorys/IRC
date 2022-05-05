@@ -25,9 +25,9 @@ class Server {
 		void	stop();
 
 	protected:
-		void	Init();
-		void	CreateSocket();
-		void	Add();
-		void	Remove(std::vector<pollfd>::iterator);
-		void 	Receive(int);
+		void	init();
+		void	createSocket();
+		void	add();
+		void	remove(std::vector<pollfd>::iterator);
+		void 	receive(int);
 };
