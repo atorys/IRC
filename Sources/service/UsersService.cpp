@@ -17,7 +17,7 @@ UsersService::UsersService(const std::string& password)
 void UsersService::addUser(int client_socket) {
     _users[client_socket] = new User(client_socket);
     Postman::sendReply(client_socket, RPL_MOTDSTART);
-    Postman::sendReply(client_socket, RPL_MOTD, "MESSAGE OF THE DAY HERE");
+    Postman::sendReply(client_socket, RPL_MOTD("MESSAGE OF THE DAY HERE"));
     Postman::sendReply(client_socket, RPL_ENDOFMOTD);
     std::cout << "[CONNECTION #" << client_socket << "]\n";
 }
@@ -63,7 +63,7 @@ void UsersService::processRequest(std::string request, int client_socket) {
     if (_commands.find(arguments[0]) != _commands.end()) {
         (this->*_commands[arguments[0]])(arguments, client_socket);
     } else {
-        Postman::sendReply(client_socket, ERR_UNKNOWNCOMMAND, arguments[0]);
+        Postman::sendReply(client_socket, ERR_UNKNOWNCOMMAND(arguments[0]));
     }
 }
 
@@ -83,7 +83,7 @@ void UsersService::user(std::vector<std::string> args, int client_socket) {
         _users[client_socket]->set_realname(args[4]);
         _users[client_socket]->set_username(args[1]);
     } else {
-        Postman::sendReply(client_socket, ERR_NEEDMOREPARAMS, "USER");
+        Postman::sendReply(client_socket, ERR_NEEDMOREPARAMS("USER"));
     }
 }
 

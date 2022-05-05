@@ -125,10 +125,10 @@ void Server::Add() {
     socklen_t			len = sizeof(clientaddr);
     int					client_socket = accept(_socket, (struct sockaddr *) &clientaddr, &len);
 
-    if (fcntl(client_socket, F_SETFL, O_NONBLOCK) < 0) {
-		std::cerr << "fcntl nonblock failure" << std::endl;
-		exit(EXIT_FAILURE);
-	}
+//    if (fcntl(client_socket, F_SETFL, O_NONBLOCK) < 0) {
+//		std::cerr << "fcntl nonblock failure" << std::endl;
+//		exit(EXIT_FAILURE);
+//	}
 
     _polls.push_back((pollfd){client_socket, POLLIN, 0});
     _service->addUser(client_socket);
