@@ -4,13 +4,9 @@
 
 #include "Server.hpp"
 #include "netinet/in.h"
-#include <arpa/inet.h>
 #include "sys/socket.h"
-#include "sys/types.h"
 #include "unistd.h"
 #include "fcntl.h"
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <netdb.h>
 #include <poll.h>
 #include <vector>
@@ -26,64 +22,18 @@ Server::Server(const std::string &port, const std::string &password)
 
 Server::~Server() {}
 
-void Server::Init() {
-
-	struct addrinfo		base, *addr_info, *ptr;
-	int 				restrict = 1;
-
-	memset((char *)&base, 0, sizeof(base));
-	base.ai_family = AF_UNSPEC;			// IPv4 or IPv6
-	base.ai_socktype = SOCK_STREAM;		// TCP
-	base.ai_flags = AI_PASSIVE;			// For wildcard IP address
-
-	// getter returns a list of address structures
-	// we might try each address until successful bind()
-	if (getaddrinfo(nullptr, _port.c_str(), &base, &addr_info))
-		throw std::runtime_error("get addrinfo failure\n");
-
-	for (ptr = addr_info; ptr != nullptr; ptr = ptr->ai_next) {
-
-		// try to create file descriptor for communication
-		if ((_socket = socket(ptr->ai_family, ptr->ai_socktype, 0)) == -1)
-			continue ;
-
-		// deactivation of "address already in use"
-		setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &restrict, sizeof(int));
-
-		// assign IP address and port to the socket
-		if (bind(_socket, ptr->ai_addr, ptr->ai_addrlen) < 0) {
-			close(_socket);
-			continue ;
-		}
-		break ;
-	}
-
-	(ptr == nullptr) ? throw std::runtime_error("socket bind failure\n") : freeaddrinfo(addr_info);
-
-	std::cout << "server init \033[32m[SUCCESS]\033[0m\n";
-	char buff[50];
-	gethostname(&buff[0], 50);
-	printf("server started as:\033[32m%s\033[0m:\033[32m%s\033[0m\n\n", buff, _port.c_str());
-
-}
-
 void Server::start() {
 
 	Init();
 
-	if (listen(_socket, 10) < 0) // marks socket as PASSIVE to accept the connections
-		throw std::runtime_error("listen socket failure\n");
-
-	if (fcntl(_socket, F_SETFL, O_NONBLOCK) < 0)
-		throw std::runtime_error("fcntl nonblock failure\n");
-
-	std::vector<pollfd>::iterator		iter;
-
 	_polls.push_back((pollfd){_socket, POLLIN, 0});
+	std::vector<pollfd>::iterator iter;
 	for (;;)
 	{
-		if (poll(&(*(_polls.begin())), _polls.size(), -1) == -1)
-            throw std::runtime_error("poll failure\n");
+		if (poll(_polls.data(), _polls.size(), -1) == -1) {
+			std::cerr << "poll failure" << std::endl;
+			exit(EXIT_FAILURE);
+		}
 
 		if (_polls[0].revents & POLLIN)
 		    Add();
@@ -99,13 +49,76 @@ void Server::start() {
 	}
 }
 
+void Server::stop() {
+	for (std::vector<pollfd>::iterator iter = _polls.begin(); iter != _polls.end(); ++iter) {
+		Remove(iter);
+	}
+	delete _service;
+}
+
+void Server::Init() {
+	char buff[50];
+
+	CreateSocket();
+	gethostname(&buff[0], 50);
+	printf("server started as:\033[32m%s\033[0m:\033[32m%s\033[0m\n\n", buff, _port.c_str());
+
+	// marks socket as PASSIVE to accept the connections
+	if (listen(_socket, 10) < 0) {
+		std::cerr << "listen socket failure" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	if (fcntl(_socket, F_SETFL, O_NONBLOCK) < 0) {
+		std::cerr << "fcntl nonblock failure" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+}
+
+void Server::CreateSocket() {
+	struct addrinfo		base{}, *addressesList, *address;
+	char				buf[INET6_ADDRSTRLEN];
+	int 				restrict = 1, status;
+
+	memset(&base, 0, sizeof base);
+	base.ai_flags = AI_PASSIVE;
+	base.ai_family = AF_UNSPEC;
+	base.ai_socktype = SOCK_STREAM;
+
+	if ((status = getaddrinfo(nullptr, _port.c_str(), &base, &addressesList)) != 0) {
+		std::cerr << "getaddrinfo:" << gai_strerror(status) << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	for (address = addressesList; address != nullptr; address = address->ai_next) {
+
+		getnameinfo(address->ai_addr, address->ai_addrlen, buf, sizeof(buf), NULL, 0, NI_NUMERICHOST);
+
+		if ((_socket = socket(address->ai_family, address->ai_socktype, 0)) != -1 &&
+		setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &restrict, sizeof(int)) != -1 &&
+		bind(_socket, address->ai_addr, address->ai_addrlen) != -1)
+		{
+			std::cout << "server init " << (address->ai_family == AF_INET ? "IPv4 " : "IPv6 ");
+			std::cout << buf << " \033[32m[SUCCESS]\033[0m\n";
+			break ;
+		}
+		std::cerr << "socket creation failed IP: " << buf << std::endl;
+	}
+
+	freeaddrinfo(addressesList);
+	if (address == nullptr)
+		exit(EXIT_FAILURE);
+}
+
 void Server::Add() {
     struct sockaddr_in	clientaddr;
     socklen_t			len = sizeof(clientaddr);
     int					client_socket = accept(_socket, (struct sockaddr *) &clientaddr, &len);
 
-    if (fcntl(client_socket, F_SETFL, O_NONBLOCK) < 0)
-        throw std::runtime_error("fcntl nonblock failure\n");
+    if (fcntl(client_socket, F_SETFL, O_NONBLOCK) < 0) {
+		std::cerr << "fcntl nonblock failure" << std::endl;
+		exit(EXIT_FAILURE);
+	}
 
     _polls.push_back((pollfd){client_socket, POLLIN, 0});
     _service->addUser(client_socket);
@@ -130,11 +143,4 @@ void Server::Receive(int client_socket) {
 		request += msg;
 	}
 	_service->processRequest(request, client_socket);
-}
-
-void Server::stop() {
-    for (std::vector<pollfd>::iterator iter = _polls.begin(); iter != _polls.end(); ++iter) {
-        Remove(iter);
-    }
-    delete _service;
 }
