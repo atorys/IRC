@@ -69,11 +69,10 @@ void Server::Init() {
 		std::cerr << "listen socket failure" << std::endl;
 		exit(EXIT_FAILURE);
 	}
-
-	if (fcntl(_socket, F_SETFL, O_NONBLOCK) < 0) {
-		std::cerr << "fcntl nonblock failure" << std::endl;
-		exit(EXIT_FAILURE);
-	}
+    if (fcntl(_socket, F_SETFL, O_NONBLOCK) < 0) {
+        std::cerr << "fcntl nonblock failure" << std::endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 /*
@@ -113,6 +112,7 @@ void Server::CreateSocket() {
 			break ;
 		}
 		std::cerr << "socket creation failed IP: " << buf << std::endl;
+        close(_socket);
 	}
 
 	freeaddrinfo(addressesList);
@@ -144,7 +144,7 @@ void Server::Receive(int client_socket) {
     std::string             request;
 
 	char msg[11];
-	size_t return_recv = 10;
+	int return_recv = 10;
 	while (return_recv == 10 || request.find('\n') != std::string::npos) {
 		bzero(&msg, sizeof(msg));
 		return_recv = recv(client_socket, &msg, 10, 0);
