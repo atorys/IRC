@@ -20,7 +20,7 @@ Server::Server(const std::string &port, const std::string &password)
 				_socket(-1),
 				_service(new UsersService(password)) {}
 
-Server::~Server() {}
+Server::~Server() { stop(); }
 
 void Server::start() {
 
@@ -50,7 +50,8 @@ void Server::start() {
 }
 
 void Server::stop() {
-	for (std::vector<pollfd>::iterator iter = _polls.begin(); iter != _polls.end(); ++iter) {
+	std::vector<pollfd>::iterator iter;
+	for (iter = _polls.begin(); iter != _polls.end(); ++iter) {
 		Remove(iter);
 	}
 	delete _service;
@@ -75,25 +76,34 @@ void Server::Init() {
 	}
 }
 
+/*
+ * Создаем потоковый сокет - дескриптор файла для системных вызовов
+ * и общения через него с помощью send() и recv()
+ */
 void Server::CreateSocket() {
 	struct addrinfo		base{}, *addressesList, *address;
 	char				buf[INET6_ADDRSTRLEN];
 	int 				restrict = 1, status;
 
 	memset(&base, 0, sizeof base);
-	base.ai_flags = AI_PASSIVE;
-	base.ai_family = AF_UNSPEC;
-	base.ai_socktype = SOCK_STREAM;
+	base.ai_flags = AI_PASSIVE; // собственный ip заполнит сама функция getaddrinfo()
+	base.ai_family = AF_UNSPEC; // рассматриваем ipv4 и ipv6
+	base.ai_socktype = SOCK_STREAM; // протокол tcp
 
 	if ((status = getaddrinfo(nullptr, _port.c_str(), &base, &addressesList)) != 0) {
 		std::cerr << "getaddrinfo:" << gai_strerror(status) << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
+	// пытаемся получить сокет с параметрами из данных листа, потом ассоциировать его с портом на нашей машине
+	// если данные не валидны, переходим к следующей структуре листа
 	for (address = addressesList; address != nullptr; address = address->ai_next) {
 
+		// чуть больше информации о доступном адресе для визуализации
 		getnameinfo(address->ai_addr, address->ai_addrlen, buf, sizeof(buf), NULL, 0, NI_NUMERICHOST);
 
+		// создаем сокет с параметрами текущего адреса
+		// setsockopt позволяет после отключения сервера сразу же переиспользовать порт
 		if ((_socket = socket(address->ai_family, address->ai_socktype, 0)) != -1 &&
 		setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &restrict, sizeof(int)) != -1 &&
 		bind(_socket, address->ai_addr, address->ai_addrlen) != -1)
@@ -111,7 +121,7 @@ void Server::CreateSocket() {
 }
 
 void Server::Add() {
-    struct sockaddr_in	clientaddr;
+    struct sockaddr_in	clientaddr{};
     socklen_t			len = sizeof(clientaddr);
     int					client_socket = accept(_socket, (struct sockaddr *) &clientaddr, &len);
 
@@ -134,8 +144,8 @@ void Server::Receive(int client_socket) {
     std::string             request;
 
 	char msg[11];
-	int return_recv = 10;
-	while (return_recv == 10 || request.find("\n") != std::string::npos) {
+	size_t return_recv = 10;
+	while (return_recv == 10 || request.find('\n') != std::string::npos) {
 		bzero(&msg, sizeof(msg));
 		return_recv = recv(client_socket, &msg, 10, 0);
 		if (return_recv <= 0)
