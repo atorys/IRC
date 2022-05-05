@@ -66,6 +66,10 @@ void UsersService::processRequest(std::string request, int client_socket) {
 }
 
 void UsersService::user(std::vector<std::string> args, int client_socket) {
+    if (_users[client_socket]->get_registred() == false){
+        _postman.sendReply(_users[client_socket], ERR_ALREADYREGISTRED);
+        return;
+    }
     if (args.size() == 5){
         args[4].erase(0, args[4].find(":") + 1);
         for (std::map<int, User*> :: iterator start = _users.begin(); start != _users.end(); start++){
