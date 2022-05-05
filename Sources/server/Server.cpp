@@ -81,7 +81,7 @@ void Server::Init() {
  * и общения через него с помощью send() и recv()
  */
 void Server::CreateSocket() {
-	struct addrinfo		base{}, *addressesList, *address;
+	struct addrinfo		base, *addressesList, *address;
 	char				buf[INET6_ADDRSTRLEN];
 	int 				restrict = 1, status;
 
@@ -121,7 +121,7 @@ void Server::CreateSocket() {
 }
 
 void Server::Add() {
-    struct sockaddr_in	clientaddr{};
+    struct sockaddr_in	clientaddr;
     socklen_t			len = sizeof(clientaddr);
     int					client_socket = accept(_socket, (struct sockaddr *) &clientaddr, &len);
 
