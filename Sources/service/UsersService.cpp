@@ -146,6 +146,7 @@ void UsersService::privmsg(std::vector<std::string> args, int client_socket){
     } else if (findUserByNickname(args[1]) == nullptr){
         Postman::sendReply(client_socket, ERR_WASNOSUCHNICK(args[1]));
     } else {
-        //send private message
+        int replySocket = findUserByNickname(args[1])->get_socket();
+        Postman::sendReply(replySocket, args[2]);
     }
 }
