@@ -43,16 +43,15 @@ User *UsersService::findUserByNickname(const std::string& nickname) {
 
 void UsersService::processRequest(std::string request, int client_socket) {
     if (_users[client_socket]->get_username().empty())
-        std::cout << ":user" << client_socket << " " << request;
+        std::cout << "user " << client_socket << ": " << request;
     else
-        std::cout << ":" << _users[client_socket]->get_username() << " " << request;
+        std::cout << _users[client_socket]->get_username() << ":" << request;
     std::vector<std::string> arguments;
     if (request.find('\n') != std::string::npos) {
         request.erase(request.find('\n'));
     }
     if (request.find(' ') == std::string::npos){
         arguments.push_back(request);
-        request.clear();
     } else {
         arguments.push_back(request.substr(0, request.find(' ')));
         request.erase(0, request.find(' ') + 1);
@@ -77,7 +76,7 @@ void UsersService::processRequest(std::string request, int client_socket) {
 }
 
 void UsersService::user(std::vector<std::string> args, int client_socket) {
-    if (_users[client_socket]->get_registred()) {
+    if (_users[client_socket]->get_registred() == false) {
         Postman::sendReply(client_socket, ERR_ALREADYREGISTRED);
         return;
     }
@@ -124,5 +123,29 @@ void UsersService::nick(std::vector<std::string> args, int client_socket) {
             Postman::sendReply(client_socket, RPL_ENDOFMOTD);
         }
         _users[client_socket]->set_nickname(args[1]);
+    }
+}
+
+// void UsersService::join(std::vector<std::string> args, int client_socket){
+
+// }
+
+void UsersService::privmsg(std::vector<std::string> args, int client_socket){
+    if (!_users[client_socket]->get_registred()){
+        Postman::sendReply(client_socket, ERR_ALREADYREGISTRED);
+    } else if (args.size() != 3){
+        if (args.size() == 2){
+            if (args[1].find(":") != std::string::npos){
+                Postman::sendReply(client_socket, ERR_NORECIPIENT(args[0]));
+            } else {
+                Postman::sendReply(client_socket, ERR_NOTEXTTOSEND);
+            }
+        } else {
+            Postman::sendReply(client_socket, ERR_TOOMANYTARGETS(args[1])));
+        }
+    } else if (findUserByNickname(args[1]) == nullptr){
+        Postman::sendReply(client_socket, ERR_WASNOSUCHNICK(args[1]));
+    } else {
+        //send private message
     }
 }

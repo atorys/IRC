@@ -121,7 +121,7 @@ void Server::remove(std::vector<pollfd>::iterator pollsIter) {
 void Server::receive(int client_socket) {
     std::string             request;
 
-	char msg[11];
+	char msg[511];
 	int return_recv = 10;
 	while (return_recv == 10 || request.find('\n') != std::string::npos) {
 		bzero(&msg, sizeof(msg));

@@ -47,3 +47,7 @@ class Postman {
 #define ERR_NEEDMOREPARAMS(command)             (std::string("461 ") + (command) + " :Not enough parameters")
 #define ERR_ALREADYREGISTRED                    "462 :You may not reregister"
 #define ERR_PASSWDMISMATCH                      "464 :Password incorrect"
+
+//PRIVMSG
+#define ERR_NORECIPIENT(command)                ("411 :No recipient given " + (command))
+#define ERR_NOTEXTTOSEND                        "421 :No text to send"
