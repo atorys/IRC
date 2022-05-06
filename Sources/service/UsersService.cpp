@@ -12,7 +12,7 @@ UsersService::UsersService(const std::string& password)
     _commands["NICK"] = &UsersService::nick;
     _commands["JOIN"] = &UsersService::join;
     _commands["KICK"] = &UsersService::kick;
-    _commands["PRIVMSG"] = &UsersService::privmsg;
+    _commands["PRIVMSG"] = &UsersService::privmsg;//kekis(не совершенная команда)
     _commands["NOTICE"] = &UsersService::notice;
 }
 
@@ -20,6 +20,17 @@ void UsersService::addUser(int client_socket) {
     _users[client_socket] = new User(client_socket);
     std::cout << "[CONNECTION #" << client_socket << "]\n";
 }
+
+// void UsersService::addChannelToList(Channel *newChannel){
+//     for (std::vector<Channel> :: iterator start = _channels.begin(); start != _channels.end(); start++){
+//         if (start->get_name() == args[1]){
+//                 Postman::sendReply(client_socket, ERR_ALREADYREGISTRED);
+//                 return;
+//             }
+//         }
+    
+//     _channels.push_back(newChannel);
+// };
 
 void UsersService::removeUser(int client_socket) {
     // delete from channels +
@@ -147,6 +158,6 @@ void UsersService::privmsg(std::vector<std::string> args, int client_socket){
         Postman::sendReply(client_socket, ERR_WASNOSUCHNICK(args[1]));
     } else {
         int replySocket = findUserByNickname(args[1])->get_socket();
-        Postman::sendReply(replySocket, args[2]);
+        Postman::sendReply(replySocket, _users[client_socket]->get_username() + args[2]);
     }
 }

@@ -7,10 +7,12 @@
 #include "Service.hpp"
 #include "Postman.hpp"
 #include "../models/User.hpp"
+#include "../models/Channel.hpp"
 #include <map>
 #include <vector>
 
 class User;
+class Channel;
 
 class UsersService : public Service {
 
@@ -19,11 +21,13 @@ class UsersService : public Service {
     const std::string&					_password;
     std::map<int, User*>				_users;
     std::map<std::string, commandPtr>   _commands;
+    std::vector<Channel *>              _channels;
 public:
 
     UsersService(const std::string&);
     virtual ~UsersService() {};
 
+    void    addChannelToList(Channel *){};
     void    addUser(int);
     void    removeUser(int);
     User*   findUserByNickname(const std::string&);
