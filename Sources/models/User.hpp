@@ -14,6 +14,9 @@ class User {
 		std::string		_username;
 		std::string		_realname;
 		bool 			_registred;
+
+		std::string     _recvBuff;
+		std::string     _sendBuff;
 	public:
 		User(int);
 		~User();

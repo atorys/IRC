@@ -42,6 +42,10 @@ void UsersService::removeUser(int client_socket) {
     
 }
 
+const std::map<int, User *> &UsersService::getUsers() const {
+    return _users;
+}
+
 User *UsersService::findUserByNickname(const std::string& nickname) {
     std::map<int, User*>::iterator start;
     for (start = _users.begin(); start != _users.end(); start++) {
@@ -88,7 +92,7 @@ void UsersService::processRequest(std::string request, int client_socket) {
 
 void UsersService::user(std::vector<std::string> args, int client_socket) {
     if (_users[client_socket]->get_registred() == false) {
-        Postman::sendReply(client_socket, ERR_ALREADYREGISTRED);
+        Postman::sendReply(client_socket, ERR_NOLOGIN(_users[client_socket]->get_username()));
         return;
     }
     if (args.size() == 5){
@@ -143,7 +147,7 @@ void UsersService::nick(std::vector<std::string> args, int client_socket) {
 
 void UsersService::privmsg(std::vector<std::string> args, int client_socket){
     if (!_users[client_socket]->get_registred()){
-        Postman::sendReply(client_socket, ERR_ALREADYREGISTRED);
+        Postman::sendReply(client_socket, ERR_NOLOGIN(_users[client_socket]->get_username()));
     } else if (args.size() != 3){
         if (args.size() == 2){
             if (args[1].find(":") != std::string::npos){

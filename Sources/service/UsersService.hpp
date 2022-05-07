@@ -33,6 +33,7 @@ public:
     User*   findUserByNickname(const std::string&);
     void    processRequest(std::string request, int client_socket);
 
+    const std::map<int, User*>&   getUsers() const;
 
 protected:
 
