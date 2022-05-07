@@ -4,13 +4,17 @@ SRCS	=	./Sources/app/main.cpp \
 			./Sources/server/Server.cpp\
 			./Sources/service/UsersService.cpp\
 			./Sources/service/Postman.cpp\
-			./Sources/models/User.cpp
+			./Sources/models/User.cpp\
+			./Sources/models/Channel.cpp\
+			./Sources/utility/utility.cpp\
 
 HEADERS	=	./Sources/server/Server.hpp \
 			./Sources/service/Service.hpp\
 			./Sources/service/UsersService.hpp\
 			./Sources/service/Postman.hpp\
 			./Sources/models/User.hpp\
+			./Sources/models/Channel.hpp\
+			./Sources/utility/utility.hpp\
 
 
 VPATH	=	./Sources/ \
