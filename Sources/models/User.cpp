@@ -3,7 +3,6 @@
 //
 
 #include "User.hpp"
-// #include "sys/socket.h"
 
 User::User(int socket) :
 			_socket(socket), _registred(false) {}

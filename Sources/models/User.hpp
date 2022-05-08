@@ -5,7 +5,6 @@
 #pragma once
 
 #include "iostream"
-// #include <poll.h>
 
 class User {
 	private:
@@ -15,8 +14,6 @@ class User {
 		std::string		_realname;
 		bool 			_registred;
 
-		std::string     _recvBuff;
-		std::string     _sendBuff;
 	public:
 		User(int);
 		~User();
@@ -25,7 +22,7 @@ class User {
 		std::string const&	get_username() const;
 		std::string const&	get_realname() const;
 		bool 		const&	get_registred() const;
-		const int&			get_socket() const;
+        const int&			get_socket() const;
 
 		void				set_registred(bool);
 		void 				set_nickname(const std::string&);

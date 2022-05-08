@@ -1,9 +1,12 @@
 #include "Channel.hpp"
 #include "algorithm"
+#include "../utility/utility.hpp"
 
 Channel::Channel(std::string const & channelName,
                 std::string const & channelPass,
-                User *admin): _channelName(channelName),
+                User *admin):
+                _maxUsersLimit(2000),
+                _channelName(channelName),
                 _channelPass(channelPass) {
                 _userList.insert(admin);
                 }
@@ -25,10 +28,10 @@ User * Channel::get_user_by_nickname(std::string nickname){
             return *start;
         start++;
     }
-    return NULL;
+    return nullptr;
 }
 
-bool Channel::is_banned(const std::string const &nickname){
+bool Channel::is_banned(const std::string &nickname){
     for (std::set<std::string>::iterator castMask = _banList.begin();
         castMask != _banList.end(); ++castMask){
             if (ut::wildcard(*castMask, nickname)){
