@@ -3,12 +3,31 @@
 //
 
 #include "Postman.hpp"
-#include "sys/socket.h"
 
-void Postman::sendReply(int user, std::string reply) {
-    reply += "\r\n";
-    if (send(user, reply.c_str(), reply.size(), 0) == -1) {
-        std::cerr << "send message to client failure\n";
-        exit(EXIT_FAILURE);
-    }
+std::string Postman::getReply(int user) const {
+    if (_replies.find(user) == _replies.end())
+        return "";
+    return _replies.at(user);
+}
+
+std::string Postman::getRequest(int user) const {
+    if (_requests.find(user) == _replies.end())
+        return "";
+    return _requests.at(user);
+}
+
+void Postman::clearReply(int user) {
+    _replies[user].clear();
+}
+void Postman::clearRequest(int user) {
+    _requests[user].clear();
+}
+
+void Postman::sendReply(int user, const std::string& reply) {
+    _replies[user] += reply;
+    _replies[user] += "\r\n";
+}
+
+void Postman::sendRequest(int user, const std::string& request) {
+    _requests[user] += request;
 }

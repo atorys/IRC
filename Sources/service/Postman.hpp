@@ -4,14 +4,26 @@
 
 #pragma once
 #include <iostream>
+#include <map>
 
 
 /*
- *  POSTMAN отправляет ответы на запросы юзеров
+ *  POSTMAN формирует буферы запросов юзеров и ответы на них
  */
 class Postman {
+    std::map<int, std::string >     _requests;
+    std::map<int, std::string >     _replies;
+
     public:
-        static void sendReply(int, std::string);
+        void sendRequest(int, const std::string&);
+        void sendReply(int, const std::string&);
+
+        void clearRequest(int);
+        void clearReply(int);
+
+        std::string   getRequest(int) const;
+        std::string   getReply(int) const;
+
 };
 
 //__REPLIES____________________________________________________

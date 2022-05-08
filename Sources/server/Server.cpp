@@ -7,18 +7,20 @@
 #include "sys/socket.h"
 #include "unistd.h"
 #include "fcntl.h"
-#include <poll.h>
-#include <vector>
 #include <cstring>
 #include <cstdio>
 #include <arpa/inet.h>
 #include "../service/UsersService.hpp"
 
+const int buffSize = 128;
+const int maxConnections = 128;
+
 Server::Server(const std::string &port, const std::string &password)
 				:
 				_port(port),
 				_socket(-1),
-				_service(new UsersService(password)) {}
+                _postman(Postman()),
+				_service(new UsersService(password, &_postman)) {}
 
 Server::~Server() { stop(); }
 
@@ -42,7 +44,11 @@ void Server::start() {
             if (iter->revents & POLLHUP) {
                 remove(iter);
                 break;
-            } else if (iter->revents & POLLIN) {
+            }
+            if (iter->revents & POLLOUT) {
+                sendback(iter->fd);
+            }
+            if (iter->revents & POLLIN) {
                 receive(iter->fd);
             }
         }
@@ -58,14 +64,14 @@ void Server::stop() {
 }
 
 void Server::init() {
-	char buff[50];
+	char buff[buffSize];
 
 	createSocket();
-	gethostname(&buff[0], 50);
+	gethostname(&buff[0], buffSize);
 	printf("server started as:\033[32m%s\033[0m:\033[32m%s\033[0m\n\n", buff, _port.c_str());
 
 	// marks socket as PASSIVE to accept the connections
-	if (listen(_socket, 10) < 0) {
+	if (listen(_socket, maxConnections) < 0) {
 		std::cerr << "listen socket failure" << std::endl;
 		exit(EXIT_FAILURE);
 	}
@@ -86,7 +92,7 @@ void Server::createSocket() {
     bzero(&address, sizeof address);
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(atoi(_port.c_str()));
+    address.sin_port = htons(strtol(_port.c_str(), nullptr, 10));
 
     if ((_socket = socket(address.sin_family, SOCK_STREAM, 0)) == -1 ||
     setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &restrict, sizeof(int)) == -1 ||
@@ -108,27 +114,42 @@ void Server::add() {
 		exit(EXIT_FAILURE);
 	}
 
-    _polls.push_back((pollfd){client_socket, POLLIN, 0});
+    _polls.push_back((pollfd){client_socket, POLLIN | POLLOUT | POLLHUP, 0});
+    _postman.clearReply(client_socket);
+    _postman.clearRequest(client_socket);
     _service->addUser(client_socket);
 }
 
 void Server::remove(std::vector<pollfd>::iterator pollsIter) {
-    _polls.erase(pollsIter);
-    _service->removeUser(pollsIter->fd);
     close(pollsIter->fd);
+    _service->removeUser(pollsIter->fd);
+    _postman.clearRequest(pollsIter->fd);
+    _postman.clearReply(pollsIter->fd);
+    _polls.erase(pollsIter);
 }
 
 void Server::receive(int client_socket) {
-    std::string             request;
+    char msg[buffSize];
 
-	char msg[511];
-	int return_recv = 10;
-	while (return_recv == 10 || request.find('\n') != std::string::npos) {
-		bzero(&msg, sizeof(msg));
-		return_recv = recv(client_socket, &msg, 10, 0);
-		if (return_recv <= 0)
-			break;
-		request += msg;
+    bzero(&msg, sizeof(msg));
+    if (recv(client_socket, &msg, buffSize, 0) <= 0) {
+        std::cerr << "recv() failure" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    _postman.sendRequest(client_socket, msg);
+
+    if (_postman.getRequest(client_socket).find('\n') != std::string::npos) {
+	    _service->processRequest(_postman.getRequest(client_socket), client_socket);
+        _postman.clearRequest(client_socket);
 	}
-	_service->processRequest(request, client_socket);
+}
+
+void Server::sendback(int client_socket) {
+    if (!_postman.getReply(client_socket).empty() && _postman.getRequest(client_socket).empty()) {
+        if (send(client_socket, _postman.getReply(client_socket).c_str(), _postman.getReply(client_socket).size(), 0) == -1) {
+            std::cerr << "send message to client failure\n";
+            exit(EXIT_FAILURE);
+        }
+        _postman.clearReply(client_socket);
+    }
 }
