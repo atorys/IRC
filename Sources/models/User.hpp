@@ -13,6 +13,7 @@ class User {
 		std::string		_username;
 		std::string		_realname;
 		bool 			_registred;
+        std::string     _awayMessage;
 
 	public:
 		User(int);
@@ -23,9 +24,12 @@ class User {
 		std::string const&	get_realname() const;
 		bool 		const&	get_registred() const;
         const int&			get_socket() const;
+        std::string const&	get_awayMessage() const;
+        bool                is_away() const;
 
 		void				set_registred(bool);
 		void 				set_nickname(const std::string&);
 		void 				set_username(const std::string&);
 		void				set_realname(const std::string&);
+        void                set_awayMessage(const std::string&);
 };
