@@ -15,7 +15,7 @@ class Channel {
         std::string                             _topic;
         std::set<User *>                        _userList;
         std::set<User *>                        _inviteList;
-        std::set<User *>                        _banList;
+        std::set<std::string>                        _banList;
 
     public:
         Channel(std::string const & channelName,
