@@ -15,6 +15,7 @@ UsersService::UsersService(const std::string& password, Postman* postman)
     _commands["KICK"] = &UsersService::kick;
     _commands["PRIVMSG"] = &UsersService::privmsg;//kekis(не совершенная команда)
     _commands["NOTICE"] = &UsersService::notice;
+    _commands["AWAY"] = &UsersService::away;
 }
 
 void UsersService::addUser(int client_socket) {

@@ -45,4 +45,5 @@ protected:
     void	kick(std::vector<std::string>, int){};
     void	privmsg(std::vector<std::string>, int);
     void	notice(std::vector<std::string>, int){};
+    void	away(std::vector<std::string>, int);
 };

@@ -7,6 +7,7 @@ SRCS	=	./Sources/app/main.cpp \
 			./Sources/models/User.cpp\
 			./Sources/models/Channel.cpp\
 			./Sources/utility/utility.cpp\
+			./Sources/service/commands/away.cpp\
 
 HEADERS	=	./Sources/server/Server.hpp \
 			./Sources/service/Service.hpp\
