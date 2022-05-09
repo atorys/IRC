@@ -42,6 +42,6 @@ class Channel {
         void add_to_banList(std::string ban);
         void remove_from_banList(std::string const &ban);
         bool is_banned(const std::string const &nickname);
-        User * get_user_by_nickname(std::string nickname);
+        User * get_user_by_username(std::string nickname);
         bool is_invited(User * user);
 };

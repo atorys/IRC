@@ -16,12 +16,12 @@ bool Channel::is_invited(User * user){
     return false;
 }
 
-User * Channel::get_user_by_nickname(std::string nickname){
+User * Channel::get_user_by_username(std::string nickname){
     std::set<User *> ::iterator start = _userList.begin();
     std::set<User *> ::iterator end = _userList.end();
     std::transform(nickname.begin(), nickname.end(), nickname.begin(), ::tolower);
     while (start != end) {
-        if (nickname == (*start)->get_nickname())
+        if (nickname == (*start)->get_username())
             return *start;
         start++;
     }
@@ -29,5 +29,11 @@ User * Channel::get_user_by_nickname(std::string nickname){
 }
 
 bool Channel::is_banned(const std::string const &nickname){
-    
+    std::set<User *>::iterator start = _banList.begin();
+    std::set<User *>::iterator end = _banList.end();
+    while (start != end) {
+        if (nickname == (*start)->get_username())
+            return true;
+    }
+    return false;
 }

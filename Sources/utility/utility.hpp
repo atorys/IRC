@@ -10,4 +10,6 @@ namespace ut{
     std::string to_lower(std::string str);
     bool wildcard(std::string regex, std::string comp);
     std::vector<std::string> split(std::string &str, std::string const &sep);
+    std::vector<std::string> splitForCmd(std::string &request);
+    // std::string ut::splitOneTime(std::string & request, std::string const &sep){};
 }

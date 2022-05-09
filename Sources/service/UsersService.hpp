@@ -8,6 +8,7 @@
 #include "Postman.hpp"
 #include "../models/User.hpp"
 #include "../models/Channel.hpp"
+#include "../utility/utility.hpp"
 #include <map>
 #include <vector>
 
