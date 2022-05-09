@@ -27,9 +27,10 @@ class Postman {
 };
 
 //__REPLIES____________________________________________________
-#define RPL_MOTDSTART                           "375 :- <server> Message of the day -"
-#define RPL_MOTD(message)                       std::string("372 :- ") + (message)
-#define RPL_ENDOFMOTD                           "376 :End of /MOTD command"
+#define RPL_WELCOME(nickname)                   (":server 001 " + (nickname) + " :Welcome to the IRCServ, " + (nickname))
+#define RPL_MOTDSTART                           ":server 375 :- ircserv Message of the day -"
+#define RPL_MOTD(message)                       std::string(":server 372 :- ") + (message)
+#define RPL_ENDOFMOTD                           ":server 376 :End of /MOTD command"
 #define RPL_AWAY(nickname, away_message)        ("301 " + (nickname) + " :" + (away_message))
 #define RPL_UNAWAY                              "305 :You are no longer marked as being away"
 #define RPL_NOWAWAY                             "306 :You have been marked as being away"
