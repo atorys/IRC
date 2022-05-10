@@ -49,9 +49,6 @@ bool ut::wildcard(std::string regex, std::string comp){
     return true;
 }
 
-// std::string ut::splitOneTime(std::string & request, std::string const &sep){
-
-// }
 
 std::vector<std::string> ut::split(std::string &str, std::string const &sep){
     std::vector<std::string> result;
@@ -75,36 +72,31 @@ std::vector<std::string> ut::split(std::string &str, std::string const &sep){
 
 std::vector<std::string> ut::splitForCmd(std::string &request){
     std::vector<std::string> arguments;
+    std::string temp = "";
     if (request.find('\n') != std::string::npos) {
         request.erase(request.find('\n'));
+    }
+    if (request.find('\r') != std::string::npos) {
+        request.erase(request.find('\r'));
     }
     if (request.find(' ') == std::string::npos){
         arguments.push_back(request);
     } else {
         if (request.find(':') != std::string::npos){
-            std::string temp(request.substr(request.find(':'), request.size() - 1));
-            temp.erase(temp.find(':'));
-            arguments.push_back(temp);
+            temp = request.substr(request.find(':') + 1);
             request.erase(request.find(':') - 1, request.size() - 1);
-            temp.erase(temp.find(':'));
-            
         }
-        arguments.push_back(request.substr(0, request.find(' ')));
-        request.erase(0, request.find(' ') + 1);
-        while (request.find(' ') != std::string::npos) {
-            arguments.push_back(request.substr(0, request.find(' ')));
-            request.erase(0, request.find(' ') + 1);
-            if (request.find(' ') == std::string::npos) {
-                arguments.push_back(request);
-                break;
+        while (!request.empty()) {
+            if (request.find(' ') != std::string::npos) {
+                arguments.push_back(request.substr(0, request.find(' ')));
+                request.erase(0, request.find(' ') + 1);
+            } else {
+            arguments.push_back(request);
+            request.erase(request.begin(), request.end());
             }
         }
+        if (!temp.empty())
+            arguments.push_back(temp);
     }
-    std::vector<std::string>::iterator start = arguments.begin();
-    std::vector<std::string>::iterator end = arguments.end();
-    while (start != end) {
-        std::cout << *start << std::endl;
-        start++;
-    }    
     return arguments;
 }
