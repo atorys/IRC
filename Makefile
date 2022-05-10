@@ -8,6 +8,13 @@ SRCS	=	./Sources/app/main.cpp \
 			./Sources/models/Channel.cpp\
 			./Sources/utility/utility.cpp\
 			./Sources/service/commands/away.cpp\
+			./Sources/service/commands/nick.cpp\
+			./Sources/service/commands/pass.cpp\
+			./Sources/service/commands/privmsg.cpp\
+			./Sources/service/commands/user.cpp\
+#			./Sources/service/commands/join.cpp\
+#			./Sources/service/commands/kick.cpp\
+#			./Sources/service/commands/notice.cpp\
 
 HEADERS	=	./Sources/server/Server.hpp \
 			./Sources/service/Service.hpp\
