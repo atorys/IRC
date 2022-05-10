@@ -36,10 +36,10 @@ void UsersService::addUser(int client_socket) {
 
 void UsersService::removeUser(int client_socket) {
     // delete from channels +
-    if (_users[client_socket]->get_username().empty())
+    if (_users[client_socket]->get_nickname().empty())
         std::cout << "user " << client_socket << " just left\n";
     else
-        std::cout << _users[client_socket]->get_username() << " just left\n";
+        std::cout << _users[client_socket]->get_nickname() << " just left\n";
     _users.erase(client_socket);
     
 }
@@ -54,11 +54,21 @@ User *UsersService::findUserByNickname(const std::string& nickname) {
     return nullptr;
 }
 
+Channel *UsersService::findChannelByName(const std::string &name){
+    std::vector<Channel *>::iterator start;
+    for (start = _channels.begin(); start != _channels.end(); start++){
+        if ((*start)->get_channelname() == name){
+            return *start;
+        }
+    }
+    return nullptr;
+}
+
 void UsersService::processRequest(std::string request, int client_socket) {
-    if (_users[client_socket]->get_username().empty())
+    if (_users[client_socket]->get_nickname().empty())
         std::cout << "user " << client_socket << ": " << request;
     else
-        std::cout << _users[client_socket]->get_username() << ":" << request;
+        std::cout << _users[client_socket]->get_nickname() << ":" << request;
     std::vector<std::string> arguments = ut::splitForCmd(request);
     if (_commands.find(arguments[0]) != _commands.end()) {
         (this->*_commands[arguments[0]])(arguments, client_socket);
