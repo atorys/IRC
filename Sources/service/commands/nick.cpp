@@ -33,8 +33,12 @@ void UsersService::nick(std::vector<std::string> args, int client_socket) {
 
     } else {
         if (!_users[client_socket]->get_username().empty()
-        && _users[client_socket]->get_nickname().empty())
+        && _users[client_socket]->get_nickname().empty()) {
+            _postman->sendReply(client_socket, RPL_MOTDSTART);
+            _postman->sendReply(client_socket, RPL_MOTD("MESSAGE OF THE DAY HERE"));
+            _postman->sendReply(client_socket, RPL_ENDOFMOTD(args[1]));
             _postman->sendReply(client_socket, RPL_WELCOME(args[1]));
+        }
         _users[client_socket]->set_nickname(args[1]);
     }
 }
