@@ -115,16 +115,14 @@ void Server::add() {
 	}
 
     _polls.push_back((pollfd){client_socket, POLLIN | POLLOUT | POLLHUP, 0});
-    _postman.clearReply(client_socket);
-    _postman.clearRequest(client_socket);
     _service->addUser(client_socket);
 }
 
 void Server::remove(std::vector<pollfd>::iterator pollsIter) {
     close(pollsIter->fd);
     _service->removeUser(pollsIter->fd);
-    _postman.clearRequest(pollsIter->fd);
-    _postman.clearReply(pollsIter->fd);
+    _postman.clearReplies(pollsIter->fd);
+    _postman.clearRequests(pollsIter->fd);
     _polls.erase(pollsIter);
 }
 
@@ -132,24 +130,23 @@ void Server::receive(int client_socket) {
     char msg[buffSize];
 
     bzero(&msg, sizeof(msg));
-    if (recv(client_socket, &msg, buffSize, 0) <= 0) {
+    if (recv(client_socket, &msg, buffSize, 0) < 0) {
         std::cerr << "recv() failure" << std::endl;
         exit(EXIT_FAILURE);
     }
-    _postman.sendRequest(client_socket, msg);
 
-    if (_postman.getRequest(client_socket).find('\n') != std::string::npos) {
+    _postman.sendRequest(client_socket, msg);
+    while (_postman.hasRequest(client_socket)) {
 	    _service->processRequest(_postman.getRequest(client_socket), client_socket);
-        _postman.clearRequest(client_socket);
 	}
 }
 
 void Server::sendback(int client_socket) {
-    if (!_postman.getReply(client_socket).empty() && _postman.getRequest(client_socket).empty()) {
-        if (send(client_socket, _postman.getReply(client_socket).c_str(), _postman.getReply(client_socket).size(), 0) == -1) {
+    if (_postman.hasReply(client_socket)) {
+        std::string reply = _postman.getReply(client_socket);
+        if (send(client_socket, reply.c_str(), reply.size(), 0) == -1) {
             std::cerr << "send message to client failure\n";
             exit(EXIT_FAILURE);
         }
-        _postman.clearReply(client_socket);
     }
 }
