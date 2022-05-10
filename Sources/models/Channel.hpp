@@ -9,13 +9,13 @@ class User;
 
 class Channel {
     private:
-        uint32_t _maxUsersLimit = 2000;
+        uint32_t _maxUsersLimit;
         std::string                             _channelName;
         std::string                             _channelPass;
         std::string                             _topic;
         std::set<User *>                        _userList;
         std::set<User *>                        _inviteList;
-        std::set<User *>                        _banList;
+        std::set<std::string>                        _banList;
 
     public:
         Channel(std::string const & channelName,
@@ -41,7 +41,7 @@ class Channel {
         void sendAll(std::string msg, User * user);
         void add_to_banList(std::string ban);
         void remove_from_banList(std::string const &ban);
-        bool is_banned(const std::string const &nickname);
-        User * get_user_by_username(std::string nickname);
+        bool is_banned(const std::string &nickname);
+        User * get_user_by_nickname(std::string nickname);
         bool is_invited(User * user);
 };

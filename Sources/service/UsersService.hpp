@@ -20,12 +20,15 @@ class UsersService : public Service {
     typedef	void (UsersService::*commandPtr)(std::vector<std::string>, int);
 
     const std::string&					_password;
+    Postman*                            _postman;
+
     std::map<int, User*>				_users;
     std::map<std::string, commandPtr>   _commands;
     std::vector<Channel *>              _channels;
+
 public:
 
-    UsersService(const std::string&);
+    UsersService(const std::string&, Postman*);
     virtual ~UsersService() {};
 
     void    addChannelToList(Channel *){};
@@ -33,8 +36,6 @@ public:
     void    removeUser(int);
     User*   findUserByNickname(const std::string&);
     void    processRequest(std::string request, int client_socket);
-
-    const std::map<int, User*>&   getUsers() const;
 
 protected:
 
@@ -45,4 +46,5 @@ protected:
     void	kick(std::vector<std::string>, int){};
     void	privmsg(std::vector<std::string>, int);
     void	notice(std::vector<std::string>, int){};
+    void	away(std::vector<std::string>, int);
 };

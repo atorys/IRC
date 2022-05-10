@@ -4,20 +4,36 @@
 
 #pragma once
 #include <iostream>
+#include <map>
 
 
 /*
- *  POSTMAN отправляет ответы на запросы юзеров
+ *  POSTMAN формирует буферы запросов юзеров и ответы на них
  */
 class Postman {
+    std::map<int, std::string >     _requests;
+    std::map<int, std::string >     _replies;
+
     public:
-        static void sendReply(int, std::string);
+        void sendRequest(int, const std::string&);
+        void sendReply(int, const std::string&);
+
+        void clearRequest(int);
+        void clearReply(int);
+
+        std::string   getRequest(int) const;
+        std::string   getReply(int) const;
+
 };
 
 //__REPLIES____________________________________________________
-#define RPL_MOTDSTART                           "375 :- <server> Message of the day -"
-#define RPL_MOTD(message)                       std::string("372 :- ") + (message)
-#define RPL_ENDOFMOTD                           "376 :End of /MOTD command"
+#define RPL_WELCOME(nickname)                   (":server 001 " + (nickname) + " :Welcome to the IRCServ, " + (nickname))
+#define RPL_MOTDSTART                           ":server 375 :- ircserv Message of the day -"
+#define RPL_MOTD(message)                       std::string(":server 372 :- ") + (message)
+#define RPL_ENDOFMOTD                           ":server 376 :End of /MOTD command"
+#define RPL_AWAY(nickname, away_message)        ("301 " + (nickname) + " :" + (away_message))
+#define RPL_UNAWAY                              "305 :You are no longer marked as being away"
+#define RPL_NOWAWAY                             "306 :You have been marked as being away"
 
 
 //__ERRORS_____________________________________________________
@@ -25,7 +41,7 @@ class Postman {
 #define ERR_NOSUCHCHANNEL(channel)              ("403 " + (channel) + " :No such channel")
 #define ERR_CANNOTSENDTOCHAN(channel)           ("404 " + (channel) + " :Cannot send to channel")
 #define ERR_WASNOSUCHNICK(channel)              ("406 " + (channel) + " :There was no such nickname")
-#define ERR_TOOMANYTARGETS(nickname)            ("407 " + (nickname) + " :Duplicate recipients. No message delivered)"
+#define ERR_TOOMANYTARGETS(nickname)            ("407 " + (nickname) + " :Duplicate recipients. No message dxelivered)"
 #define ERR_UNKNOWNCOMMAND(command)             ("421 " + (command) + " :Unknown command")
 
 //NICK

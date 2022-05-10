@@ -4,9 +4,10 @@
 
 #include "UsersService.hpp"
 
-UsersService::UsersService(const std::string& password)
+UsersService::UsersService(const std::string& password, Postman* postman)
                         :
-                        _password(password) {
+                        _password(password),
+                        _postman(postman) {
     _commands["PASS"] = &UsersService::pass;
     _commands["USER"] = &UsersService::user;
     _commands["NICK"] = &UsersService::nick;
@@ -14,6 +15,7 @@ UsersService::UsersService(const std::string& password)
     _commands["KICK"] = &UsersService::kick;
     _commands["PRIVMSG"] = &UsersService::privmsg;//kekis(не совершенная команда)
     _commands["NOTICE"] = &UsersService::notice;
+    _commands["AWAY"] = &UsersService::away;
 }
 
 void UsersService::addUser(int client_socket) {
@@ -42,14 +44,10 @@ void UsersService::removeUser(int client_socket) {
     
 }
 
-const std::map<int, User *> &UsersService::getUsers() const {
-    return _users;
-}
-
 User *UsersService::findUserByNickname(const std::string& nickname) {
     std::map<int, User*>::iterator start;
     for (start = _users.begin(); start != _users.end(); start++) {
-        if (start->second->get_username() == nickname) {
+        if (start->second->get_nickname() == nickname) {
             return start->second;
         }
     }
@@ -65,81 +63,6 @@ void UsersService::processRequest(std::string request, int client_socket) {
     if (_commands.find(arguments[0]) != _commands.end()) {
         (this->*_commands[arguments[0]])(arguments, client_socket);
     } else {
-        Postman::sendReply(client_socket, ERR_UNKNOWNCOMMAND(arguments[0]));
-    }
-}
-
-void UsersService::user(std::vector<std::string> args, int client_socket) {
-    if (_users[client_socket]->get_registred() == false) {
-        Postman::sendReply(client_socket, ERR_NOLOGIN(_users[client_socket]->get_username()));
-        return;
-    }
-    if (args.size() == 5){
-        for (std::map<int, User*> :: iterator start = _users.begin(); start != _users.end(); start++){
-            if (start->second->get_username() == args[1]){
-                Postman::sendReply(client_socket, ERR_ALREADYREGISTRED);
-                return;
-            }
-        }
-        _users[client_socket]->set_realname(args[4]);
-        _users[client_socket]->set_username(args[1]);
-    } else {
-        Postman::sendReply(client_socket, ERR_NEEDMOREPARAMS("USER"));
-    }
-}
-
-void UsersService::pass(std::vector<std::string> args, int client_socket) {
-    if (_users[client_socket]->get_registred()) {
-        Postman::sendReply(client_socket, ERR_ALREADYREGISTRED);
-    } else if (args.size() < 2) {
-        Postman::sendReply(client_socket, ERR_NEEDMOREPARAMS("PASS"));
-    } else if (std::equal(_password.begin(), _password.end(), args[1].begin())) {
-        _users[client_socket]->set_registred(true);
-    } else {
-        Postman::sendReply(client_socket, ERR_PASSWDMISMATCH);
-    }
-}
-
-void UsersService::nick(std::vector<std::string> args, int client_socket) {
-    if (!_users[client_socket]->get_registred()) {
-        Postman::sendReply(client_socket, ERR_NOLOGIN(_users[client_socket]->get_username()));
-    } else if (args.size() < 2) {
-        Postman::sendReply(client_socket, ERR_NONICKNAMEGIVEN);
-    } else if (findUserByNickname(args[1]) != nullptr) {
-        Postman::sendReply(client_socket, ERR_NICKNAMEINUSE(args[1]));
-    } else if (args[1].at(0) < 'a' || args[1].at(0) > 'z') {
-        Postman::sendReply(client_socket, ERR_ERRONEUSNICKNAME(args[1]));
-    } else {
-        if (_users[client_socket]->get_nickname().empty()) {
-            Postman::sendReply(client_socket, RPL_MOTDSTART);
-            Postman::sendReply(client_socket, RPL_MOTD("MESSAGE OF THE DAY HERE"));
-            Postman::sendReply(client_socket, RPL_ENDOFMOTD);
-        }
-        _users[client_socket]->set_nickname(args[1]);
-    }
-}
-
-// void UsersService::join(std::vector<std::string> args, int client_socket){
-
-// }
-
-void UsersService::privmsg(std::vector<std::string> args, int client_socket){
-    if (!_users[client_socket]->get_registred()){
-        Postman::sendReply(client_socket, ERR_NOLOGIN(_users[client_socket]->get_username()));
-    } else if (args.size() != 3){
-        if (args.size() == 2){
-            if (args[1].find(":") != std::string::npos){
-                Postman::sendReply(client_socket, ERR_NORECIPIENT(args[0]));
-            } else {
-                Postman::sendReply(client_socket, ERR_NOTEXTTOSEND);
-            }
-        } else {
-            Postman::sendReply(client_socket, ERR_TOOMANYTARGETS(args[1])));
-        }
-    } else if (findUserByNickname(args[1]) == nullptr){
-        Postman::sendReply(client_socket, ERR_WASNOSUCHNICK(args[1]));
-    } else {
-        int replySocket = findUserByNickname(args[1])->get_socket();
-        Postman::sendReply(replySocket, _users[client_socket]->get_username() + args[2]);
+        _postman->sendReply(client_socket, ERR_UNKNOWNCOMMAND(arguments[0]));
     }
 }
