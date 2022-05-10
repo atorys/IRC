@@ -28,6 +28,10 @@ class Channel {
             return _topic;
         }
 
+        std::set<User *> get_userlist(){
+            return _userList;
+        }
+
         std::string const &get_channelname() const {
             return _channelName;
         }
@@ -42,6 +46,6 @@ class Channel {
         void add_to_banList(std::string ban);
         void remove_from_banList(std::string const &ban);
         bool is_banned(const std::string &nickname);
-        User * get_user_by_nickname(std::string nickname);
+        User * get_user_by_username(std::string nickname);
         bool is_invited(User * user);
 };

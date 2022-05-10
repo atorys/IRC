@@ -15,6 +15,8 @@ void UsersService::user(std::vector<std::string> args, int client_socket) {
         }
         _users[client_socket]->set_realname(args[4]);
         _users[client_socket]->set_username(args[1]);
+        if (!_users[client_socket]->get_nickname().empty())
+            _postman->sendReply(client_socket, RPL_WELCOME(_users[client_socket]->get_nickname()));
     } else {
         _postman->sendReply(client_socket, ERR_NEEDMOREPARAMS("USER"));
     }

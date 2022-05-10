@@ -35,6 +35,7 @@ public:
     void    addUser(int);
     void    removeUser(int);
     User*   findUserByNickname(const std::string&);
+    Channel* findChannelByName(const std::string&);
     void    processRequest(std::string request, int client_socket);
 
 protected:

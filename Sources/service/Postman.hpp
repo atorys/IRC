@@ -41,7 +41,7 @@ class Postman {
 #define ERR_NOSUCHCHANNEL(channel)              ("403 " + (channel) + " :No such channel")
 #define ERR_CANNOTSENDTOCHAN(channel)           ("404 " + (channel) + " :Cannot send to channel")
 #define ERR_WASNOSUCHNICK(channel)              ("406 " + (channel) + " :There was no such nickname")
-#define ERR_TOOMANYTARGETS(nickname)            ("407 " + (nickname) + " :Duplicate recipients. No message dxelivered)"
+#define ERR_TOOMANYTARGETS(nickname)            ("407 " + (nickname) + " :Duplicate recipients. No message delivered)"
 #define ERR_UNKNOWNCOMMAND(command)             ("421 " + (command) + " :Unknown command")
 
 //NICK
