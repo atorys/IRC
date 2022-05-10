@@ -49,12 +49,18 @@ bool ut::wildcard(std::string regex, std::string comp){
     return true;
 }
 
+
 std::vector<std::string> ut::split(std::string &str, std::string const &sep){
     std::vector<std::string> result;
     if (str.find(sep) == std::string::npos)
         result.push_back(str);
     while (str.find(sep) != std::string::npos) {
-        result.push_back(str.substr(0, str.find(sep)));
+        if (str.find(sep) == 0){
+            str.erase(0);
+            continue;
+        }
+        else
+            result.push_back(str.substr(0, str.find(sep)));
         str.erase(0, str.find(sep) + 1);
         if ((str.find(sep) == std::string::npos)){
             result.push_back(str);
@@ -62,4 +68,35 @@ std::vector<std::string> ut::split(std::string &str, std::string const &sep){
         }
     }
     return result;
+}
+
+std::vector<std::string> ut::splitForCmd(std::string &request){
+    std::vector<std::string> arguments;
+    std::string temp = "";
+    if (request.find('\n') != std::string::npos) {
+        request.erase(request.find('\n'));
+    }
+    if (request.find('\r') != std::string::npos) {
+        request.erase(request.find('\r'));
+    }
+    if (request.find(' ') == std::string::npos){
+        arguments.push_back(request);
+    } else {
+        if (request.find(':') != std::string::npos){
+            temp = request.substr(request.find(':') + 1);
+            request.erase(request.find(':') - 1, request.size() - 1);
+        }
+        while (!request.empty()) {
+            if (request.find(' ') != std::string::npos) {
+                arguments.push_back(request.substr(0, request.find(' ')));
+                request.erase(0, request.find(' ') + 1);
+            } else {
+            arguments.push_back(request);
+            request.erase(request.begin(), request.end());
+            }
+        }
+        if (!temp.empty())
+            arguments.push_back(temp);
+    }
+    return arguments;
 }

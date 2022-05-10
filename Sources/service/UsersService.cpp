@@ -59,28 +59,7 @@ void UsersService::processRequest(std::string request, int client_socket) {
         std::cout << "user " << client_socket << ": " << request;
     else
         std::cout << _users[client_socket]->get_username() << ":" << request;
-    std::vector<std::string> arguments;
-    if (request.find('\n') != std::string::npos) {
-        request.erase(request.find('\n'));
-    }
-    if (request.find(' ') == std::string::npos){
-        arguments.push_back(request);
-    } else {
-        arguments.push_back(request.substr(0, request.find(' ')));
-        request.erase(0, request.find(' ') + 1);
-        if (request.find(' ') == std::string::npos)
-            arguments.push_back(request);
-        else {
-            while (request.find(' ') != std::string::npos) {
-                arguments.push_back(request.substr(0, request.find(' ')));
-                request.erase(0, request.find(' ') + 1);
-                if ((request.find(' ') == std::string::npos) || (request.find(':') < request.find(' '))) {
-                    arguments.push_back(request);
-                    break;
-                }
-            }
-        }
-    }
+    std::vector<std::string> arguments = ut::splitForCmd(request);
     if (_commands.find(arguments[0]) != _commands.end()) {
         (this->*_commands[arguments[0]])(arguments, client_socket);
     } else {
