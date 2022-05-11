@@ -19,7 +19,7 @@ void UsersService::topic(std::vector<std::string> args, int client_socket) {
         if ((channel = findChannelByName(args[1])) == nullptr) {
             _postman->sendReply(client_socket, ERR_NOSUCHCHANNEL(args[1]));
 
-        } else if (channel->get_user_by_username(_users[client_socket]->get_username()) == nullptr) { // todo: USERNAME ? NICKNAME
+        } else if (channel->get_user_by_nickname(_users[client_socket]->get_username()) == nullptr) { // todo: USERNAME ? NICKNAME
             _postman->sendReply(client_socket, ERR_NOTONCHANNEL(channel->get_channelname()));
 
         } else if (args.size() == 2) {
