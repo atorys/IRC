@@ -18,6 +18,9 @@ UsersService::UsersService(const std::string& password, Postman* postman)
     _commands["AWAY"] = &UsersService::away;
     _commands["PING"] = &UsersService::ping;
     _commands["QUIT"] = &UsersService::quit;
+    _commands["ISON"] = &UsersService::ison;
+    _commands["LIST"] = &UsersService::list;
+    _commands["TOPIC"] = &UsersService::topic;
 }
 
 void UsersService::addUser(int client_socket) {

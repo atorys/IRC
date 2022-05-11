@@ -49,4 +49,7 @@ protected:
     void	away(std::vector<std::string>, int);
     void	ping(std::vector<std::string>, int);
     void	quit(std::vector<std::string>, int);
+    void	ison(std::vector<std::string>, int);
+    void	list(std::vector<std::string>, int);
+    void	topic(std::vector<std::string>, int);
 };

@@ -37,7 +37,13 @@ class Postman {
 #define RPL_AWAY(nickname, away_message)        ("301 " + (nickname) + " :" + (away_message))
 #define RPL_UNAWAY                              "305 :You are no longer marked as being away"
 #define RPL_NOWAWAY                             "306 :You have been marked as being away"
+#define RPL_ISON(nicknames)                     ("303 :" + (nicknames))
+#define RPL_LISTSTART                           "321 Channel :Topic"
+#define RPL_LIST(channel, topic)                ("322 " + (channel) + " :" + (topic))
+#define RPL_LISTEND                             "323 :End of /LIST"
 #define RPL_QUIT(nickname, message)             ((nickname) + " quited :" + (message))
+#define RPL_NOTOPIC(channel)                    ("331 " + (channel) + " :No topic is set")
+#define RPL_TOPIC(channel, topic)               ("332 " + (channel) + " :" + (topic))
 
 
 //__ERRORS_____________________________________________________
