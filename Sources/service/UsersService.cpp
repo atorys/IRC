@@ -46,6 +46,10 @@ void UsersService::removeUser(int client_socket) {
     
 }
 
+bool UsersService::isConnected(int client_socket) {
+    return _users[client_socket]->is_connected();
+}
+
 User *UsersService::findUserByNickname(const std::string& nickname) {
     std::map<int, User*>::iterator start;
     for (start = _users.begin(); start != _users.end(); start++) {

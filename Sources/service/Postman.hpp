@@ -37,6 +37,7 @@ class Postman {
 #define RPL_AWAY(nickname, away_message)        ("301 " + (nickname) + " :" + (away_message))
 #define RPL_UNAWAY                              "305 :You are no longer marked as being away"
 #define RPL_NOWAWAY                             "306 :You have been marked as being away"
+#define RPL_QUIT(nickname, message)             ((nickname) + " quited :" + (message))
 
 
 //__ERRORS_____________________________________________________

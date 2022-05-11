@@ -35,4 +35,5 @@ class Server {
 		void	remove(std::vector<pollfd>::iterator);
 		void 	receive(int);
 		void 	sendback(int);
+		bool 	processed(int);
 };
