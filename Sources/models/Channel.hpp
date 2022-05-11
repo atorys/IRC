@@ -30,6 +30,8 @@ class Channel {
             return _topic;
         }
 
+        void    set_topic(const std::string &topic);
+
         std::set<User *> get_userlist(){
             return _userList;
         }

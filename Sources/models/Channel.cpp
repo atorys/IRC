@@ -51,3 +51,7 @@ void Channel::remove_from_banList(std::string const &ban){
             ++castMaskInList;
         }
 }
+
+void Channel::set_topic(const std::string &topic) {
+    this->_topic = topic;
+}
