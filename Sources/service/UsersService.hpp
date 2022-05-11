@@ -48,4 +48,6 @@ protected:
     void	privmsg(std::vector<std::string>, int);
     void	notice(std::vector<std::string>, int);
     void	away(std::vector<std::string>, int);
+    void	ping(std::vector<std::string>, int);
+    void	quit(std::vector<std::string>, int);
 };

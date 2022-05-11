@@ -16,6 +16,8 @@ UsersService::UsersService(const std::string& password, Postman* postman)
     _commands["PRIVMSG"] = &UsersService::privmsg;//kekis(не совершенная команда)
     _commands["NOTICE"] = &UsersService::notice;
     _commands["AWAY"] = &UsersService::away;
+    _commands["PING"] = &UsersService::ping;
+    _commands["QUIT"] = &UsersService::quit;
 }
 
 void UsersService::addUser(int client_socket) {
