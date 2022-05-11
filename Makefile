@@ -15,7 +15,7 @@ SRCS	=	./Sources/app/main.cpp \
 			./Sources/service/commands/ping.cpp\
 			./Sources/service/commands/notice.cpp\
 			./Sources/service/commands/quit.cpp\
-#			./Sources/service/commands/join.cpp\
+			./Sources/service/commands/join.cpp\
 #			./Sources/service/commands/kick.cpp\
 
 HEADERS	=	./Sources/server/Server.hpp \

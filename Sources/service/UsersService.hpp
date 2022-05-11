@@ -10,6 +10,7 @@
 #include "../models/Channel.hpp"
 #include "../utility/utility.hpp"
 #include <map>
+#include <set>
 #include <vector>
 
 class UsersService : public Service {
@@ -21,7 +22,7 @@ class UsersService : public Service {
 
     std::map<int, User*>				_users;
     std::map<std::string, commandPtr>   _commands;
-    std::vector<Channel *>              _channels;
+    std::set<Channel *>              _channels;
 
 public:
 
@@ -41,7 +42,7 @@ protected:
     void	pass(std::vector<std::string>, int);
     void	user(std::vector<std::string>, int);
     void	nick(std::vector<std::string>, int);
-    void	join(std::vector<std::string>, int){};
+    void	join(std::vector<std::string>, int);
     void	kick(std::vector<std::string>, int){};
     void	privmsg(std::vector<std::string>, int);
     void	notice(std::vector<std::string>, int);

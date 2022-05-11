@@ -3,11 +3,10 @@
 #include "../utility/utility.hpp"
 
 Channel::Channel(std::string const & channelName,
-                std::string const & channelPass,
                 User *admin):
                 _maxUsersLimit(2000),
-                _channelName(channelName),
-                _channelPass(channelPass) {
+                _channelName(channelName) {
+                    std::cout << channelName << ": created!" << "\n";
                 _userList.insert(admin);
                 }
 

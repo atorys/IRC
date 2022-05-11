@@ -11,7 +11,6 @@ class Channel {
     private:
         uint32_t _maxUsersLimit;
         std::string                             _channelName;
-        std::string                             _channelPass;
         std::string                             _topic;
         std::set<User *>                        _userList;
         std::set<User *>                        _inviteList;
@@ -19,10 +18,13 @@ class Channel {
 
     public:
         Channel(std::string const & channelName,
-                std::string const & channelPass,
                 User *admin);
 
         ~Channel(){}
+
+        void addUser(User *user){
+            _userList.insert(user);
+        }
 
         std::string const &get_topic()const{
             return _topic;

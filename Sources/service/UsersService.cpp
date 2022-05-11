@@ -61,7 +61,7 @@ User *UsersService::findUserByNickname(const std::string& nickname) {
 }
 
 Channel *UsersService::findChannelByName(const std::string &name){
-    std::vector<Channel *>::iterator start;
+    std::set<Channel *>::iterator start;
     for (start = _channels.begin(); start != _channels.end(); start++){
         if ((*start)->get_channelname() == name){
             return *start;
