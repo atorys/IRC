@@ -148,5 +148,6 @@ void Server::sendback(int client_socket) {
             std::cerr << "send message to client failure\n";
             exit(EXIT_FAILURE);
         }
+        std::cout << "server: " << reply;
     }
 }
