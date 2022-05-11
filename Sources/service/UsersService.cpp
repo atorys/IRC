@@ -16,6 +16,8 @@ UsersService::UsersService(const std::string& password, Postman* postman)
     _commands["PRIVMSG"] = &UsersService::privmsg;//kekis(не совершенная команда)
     _commands["NOTICE"] = &UsersService::notice;
     _commands["AWAY"] = &UsersService::away;
+    _commands["PING"] = &UsersService::ping;
+    _commands["QUIT"] = &UsersService::quit;
 }
 
 void UsersService::addUser(int client_socket) {
@@ -42,6 +44,10 @@ void UsersService::removeUser(int client_socket) {
         std::cout << _users[client_socket]->get_nickname() << " just left\n";
     _users.erase(client_socket);
     
+}
+
+bool UsersService::isConnected(int client_socket) {
+    return _users[client_socket]->is_connected();
 }
 
 User *UsersService::findUserByNickname(const std::string& nickname) {

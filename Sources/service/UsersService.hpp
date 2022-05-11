@@ -12,9 +12,6 @@
 #include <map>
 #include <vector>
 
-class User;
-class Channel;
-
 class UsersService : public Service {
 
     typedef	void (UsersService::*commandPtr)(std::vector<std::string>, int);
@@ -34,6 +31,7 @@ public:
     void    addChannelToList(Channel *){};
     void    addUser(int);
     void    removeUser(int);
+    bool    isConnected(int);
     User*   findUserByNickname(const std::string&);
     Channel* findChannelByName(const std::string&);
     void    processRequest(std::string request, int client_socket);
@@ -48,4 +46,6 @@ protected:
     void	privmsg(std::vector<std::string>, int);
     void	notice(std::vector<std::string>, int);
     void	away(std::vector<std::string>, int);
+    void	ping(std::vector<std::string>, int);
+    void	quit(std::vector<std::string>, int);
 };

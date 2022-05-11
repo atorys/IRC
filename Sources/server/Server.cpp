@@ -45,11 +45,17 @@ void Server::start() {
                 remove(iter);
                 break;
             }
-            if (iter->revents & POLLOUT) {
+            if (iter->revents & POLLOUT)
                 sendback(iter->fd);
-            }
-            if (iter->revents & POLLIN) {
+
+            if (iter->revents & POLLIN)
                 receive(iter->fd);
+
+            if (!processed(iter->fd)) {
+                if (iter->revents & POLLOUT)
+                    sendback(iter->fd);
+                remove(iter);
+                break;
             }
         }
 	}
@@ -134,11 +140,16 @@ void Server::receive(int client_socket) {
         std::cerr << "recv() failure" << std::endl;
         exit(EXIT_FAILURE);
     }
-
     _postman.sendRequest(client_socket, msg);
+}
+
+bool Server::processed(int client_socket) {
     while (_postman.hasRequest(client_socket)) {
-	    _service->processRequest(_postman.getRequest(client_socket), client_socket);
-	}
+        _service->processRequest(_postman.getRequest(client_socket), client_socket);
+        if (!_service->isConnected(client_socket))
+            return false;
+    }
+    return true;
 }
 
 void Server::sendback(int client_socket) {
