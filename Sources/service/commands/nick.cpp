@@ -1,12 +1,5 @@
 #include "../UsersService.hpp"
 
-/*
- * Устанавливает новый ник или изменяет старый
- *
- * Command: NICK
- * Parameters: <nickname>
- */
-
 bool    isValidNickname(const std::string& nick) {
     const std::string spec = "-[]^{}";
     if (nick.length() > 9)
@@ -18,6 +11,12 @@ bool    isValidNickname(const std::string& nick) {
     return true;
 }
 
+/*
+ * Устанавливает новый ник или изменяет старый
+ *
+ * @Command: NICK
+ * @Parameters: <nickname>
+ */
 void UsersService::nick(std::vector<std::string> args, int client_socket) {
     if (!_users[client_socket]->get_registred()) {
         _postman->sendReply(client_socket, ERR_NOLOGIN(_users[client_socket]->get_username()));
@@ -32,8 +31,7 @@ void UsersService::nick(std::vector<std::string> args, int client_socket) {
         _postman->sendReply(client_socket, ERR_ERRONEUSNICKNAME(args[1]));
 
     } else {
-        if (!_users[client_socket]->get_username().empty()
-        && _users[client_socket]->get_nickname().empty()) {
+        if (!_users[client_socket]->is_authenticated()) {
             _postman->sendReply(client_socket, RPL_MOTDSTART);
             _postman->sendReply(client_socket, RPL_MOTD("MESSAGE OF THE DAY HERE"));
             _postman->sendReply(client_socket, RPL_ENDOFMOTD(args[1]));

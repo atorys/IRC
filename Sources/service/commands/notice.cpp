@@ -1,7 +1,7 @@
 #include "../UsersService.hpp"
 
 void UsersService::notice(std::vector<std::string> args, int client_socket){
-    if (!_users[client_socket]->get_registred()){
+    if (!_users[client_socket]->is_authenticated()){
         _postman->sendReply(client_socket, ERR_NOLOGIN(_users[client_socket]->get_username()));
     } else if (args.size() != 3){
         if (args.size() == 2){

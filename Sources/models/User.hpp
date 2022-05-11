@@ -26,6 +26,7 @@ class User {
         const int&			get_socket() const;
         std::string const&	get_awayMessage() const;
         bool                is_away() const;
+        bool                is_authenticated() const;
 
 		void				set_registred(bool);
 		void 				set_nickname(const std::string&);

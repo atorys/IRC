@@ -17,7 +17,8 @@ const int			&User::get_socket()	const	{ return this->_socket; }
 const bool 			&User::get_registred() const {return this->_registred;}
 const std::string	&User::get_awayMessage() const { return this->_awayMessage; }
 
-bool                User::is_away() const       { return (!this->_awayMessage.empty()); }
+bool                User::is_away() const { return (!this->_awayMessage.empty()); }
+bool                User::is_authenticated() const { return this->_registred && !this->_nickname.empty() && !this->_username.empty(); }
 
 void User::set_nickname(const std::string &nickname) { this->_nickname = nickname; }
 void User::set_username(const std::string &username) { this->_username = username; }
