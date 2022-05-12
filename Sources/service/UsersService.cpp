@@ -17,9 +17,11 @@ UsersService::UsersService(const std::string& password, Postman* postman)
     _commands["NOTICE"] = &UsersService::notice;
     _commands["AWAY"] = &UsersService::away;
     _commands["PING"] = &UsersService::ping;
+    _commands["PONG"] = &UsersService::pong;
     _commands["QUIT"] = &UsersService::quit;
     _commands["ISON"] = &UsersService::ison;
     _commands["LIST"] = &UsersService::list;
+    _commands["NAMES"] = &UsersService::names;
     _commands["TOPIC"] = &UsersService::topic;
     _commands["PART"] = &UsersService::part;
     _commands["BOT"] = &UsersService::bot;
@@ -53,6 +55,7 @@ void UsersService::removeUser(int client_socket) {
         std::cout << "user " << client_socket << " just left\n";
     else
         std::cout << _users[client_socket]->get_nickname() << " just left\n";
+    delete _users.at(client_socket);
     _users.erase(client_socket);
     
 }

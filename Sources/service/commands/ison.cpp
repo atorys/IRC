@@ -19,6 +19,6 @@ void UsersService::ison(std::vector<std::string> args, int client_socket) {
             if (findUserByNickname(args[i]) != nullptr)
                 nicknames += ' ' + args[i];
         }
-        _postman->sendReply(client_socket, RPL_ISON(nicknames));
+        _postman->sendReply(client_socket, RPL_ISON(_users[client_socket]->get_nickname(), nicknames));
     }
 }

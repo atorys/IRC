@@ -28,7 +28,7 @@ class Channel {
         std::vector<User *>             &get_userlist();
         int                             get_count_of_users();
         User*                           get_user_by_nickname(std::string nickname);
-        void                            sendAll(std::string msg);
+        void                            sendAll(const std::string& msg, bool skipLastUser);
         bool                            is_in_channel(User *user);
         // bool is_invited(User * user);
 };

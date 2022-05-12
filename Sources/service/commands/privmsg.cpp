@@ -5,7 +5,7 @@ void UsersService::privmsg(std::vector<std::string> args, int client_socket){
         _postman->sendReply(client_socket, ERR_NOLOGIN(_users[client_socket]->get_username()));
     } else if (args.size() != 3){
         if (args.size() == 2){
-            if (args[1].find(":") != std::string::npos){
+            if (args[1].find(':') != std::string::npos){
                 _postman->sendReply(client_socket, ERR_NORECIPIENT(args[0]));
             } else {
                 _postman->sendReply(client_socket, ERR_NOTEXTTOSEND);
@@ -23,15 +23,21 @@ void UsersService::privmsg(std::vector<std::string> args, int client_socket){
             std::vector<User *> userList = channel->get_userlist();
             std::vector<User *> ::iterator start = userList.begin();
             std::vector<User *> ::iterator end = userList.end();
-            while (start != end){
-                _postman->sendReply((*start)->get_socket(), _users[client_socket]->get_nickname() + " : " + args[2]);
+            while (start != end) {
+                _postman->sendReply((*start)->get_socket(), RPL_PRIVMSG(_users[client_socket]->get_nickname() + "!" + _users[client_socket]->get_nickname() + "@1123",
+                                                                        channel->get_channelname(),
+                                                                        args[2]));
                 start++;
             }
     } else {
         int replySocket = findUserByNickname(args[1])->get_socket();
         if (_users[replySocket]->is_away())
-            _postman->sendReply(client_socket, RPL_AWAY(_users[replySocket]->get_nickname(), _users[replySocket]->get_awayMessage()));
+            _postman->sendReply(client_socket, RPL_AWAY(_users[client_socket]->get_nickname(),
+                                                        _users[replySocket]->get_nickname(),
+                                                        _users[replySocket]->get_awayMessage()));
         else
-            _postman->sendReply(replySocket, _users[client_socket]->get_nickname() + " : " + args[2]);
+            _postman->sendReply(replySocket, RPL_PRIVMSG(_users[client_socket]->get_nickname(),
+                                                         _users[replySocket]->get_nickname(),
+                                                         args[2]));
     }
 }

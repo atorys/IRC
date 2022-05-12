@@ -22,7 +22,7 @@ class UsersService : public Service {
 
     std::map<int, User*>				_users;
     std::map<std::string, commandPtr>   _commands;
-    std::set<Channel *>              _channels;
+    std::set<Channel *>                 _channels;
 
 public:
 
@@ -48,9 +48,11 @@ protected:
     void	notice(std::vector<std::string>, int);
     void	away(std::vector<std::string>, int);
     void	ping(std::vector<std::string>, int);
+    void	pong(std::vector<std::string>, int){};
     void	quit(std::vector<std::string>, int);
     void	ison(std::vector<std::string>, int);
     void	list(std::vector<std::string>, int);
+    void	names(std::vector<std::string>, int);
     void	topic(std::vector<std::string>, int);
     void    part(std::vector<std::string>, int);
     void    bot(std::vector<std::string>, int){};

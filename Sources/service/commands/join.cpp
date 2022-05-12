@@ -6,31 +6,25 @@ void UsersService::join(std::vector<std::string> args, int client_socket){
     } else {
         if (args.size() == 2){
             std::vector<std::string> channelNames = ut::split(args[1], ",");
-            std::set<Channel *>::iterator start = _channels.begin();
-            std::set<Channel *>::iterator end = _channels.end();
-            // while (start != end) {
-            //     for (int i = 0; i < channelNames.size(); i++){
-            //         if ((*start)->get_channelname() == channelNames[i]){
-            //             (*start)->addUser(_users[client_socket]);
-            //         }
-            //     }
-            //     start++;
-            // }
+            std::set<Channel *>::iterator start;
             for (int i = 0; i < channelNames.size(); i++){
                 start = _channels.begin();
-                while (start != end){
+                while (start != _channels.end()) {
                     if ((*start)->get_channelname() == channelNames[i]){
                         break;
                     }
                     start++;
                 }
-                if (start == end){
+                std::vector<std::string> arg;
+                arg.push_back("NAMES");
+                if (start == _channels.end()) {
                     _channels.insert(new Channel(channelNames[i], _users[client_socket], _postman));
-                    std::cout << "1\n";
+                    arg.push_back(channelNames[i]);
                 } else {
                     (*start)->addUser(_users[client_socket]);
-                    std::cout << "2\n";
+                    arg.push_back((*start)->get_channelname());
                 }
+                names(args, client_socket);
             }
         }
     }
