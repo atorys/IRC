@@ -22,6 +22,7 @@ UsersService::UsersService(const std::string& password, Postman* postman)
     _commands["LIST"] = &UsersService::list;
     _commands["TOPIC"] = &UsersService::topic;
     _commands["PART"] = &UsersService::part;
+    _commands["BOT"] = &UsersService::bot;
 }
 
 void UsersService::addUser(int client_socket) {

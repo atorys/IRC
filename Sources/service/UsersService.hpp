@@ -53,4 +53,5 @@ protected:
     void	list(std::vector<std::string>, int);
     void	topic(std::vector<std::string>, int);
     void    part(std::vector<std::string>, int);
+    void    bot(std::vector<std::string>, int){};
 };
