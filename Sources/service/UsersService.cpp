@@ -42,7 +42,7 @@ void UsersService::addUser(int client_socket) {
 void UsersService::removeUser(int client_socket) {
     // delete from channels +
     for (std::set<Channel *>::iterator start = _channels.begin(); start != _channels.end(); start++){
-        (*start)->removeUser(_users[client_socket]);
+        (*start)->removeUser(_users[client_socket], "");
     }
     //по идее здесь он будет проходиться по всем каналам и будет пробовать удалить данного юзера из всех каналов,
     //но было бы логичнее добавить юзеру список каналов в которых он находиться и из него добавлять, учитывая то,

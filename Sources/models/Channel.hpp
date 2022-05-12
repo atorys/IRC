@@ -23,7 +23,7 @@ class Channel {
         ~Channel(){};
 
         void                            addUser(User *user);
-        void                            removeUser(User *user);
+        void                            removeUser(User *user, std::string msg);
         void                            set_topic(const std::string &topic);
         std::string const               &get_topic() const;
         std::string const               &get_channelname() const;
@@ -31,6 +31,6 @@ class Channel {
         std::vector<User *>::size_type  get_count_of_users();
         User*                           get_user_by_nickname(std::string nickname);
         void                            sendAll(std::string msg);
-        // bool is_in_channel(User *user) const;
+        bool                            is_in_channel(User *user);
         // bool is_invited(User * user);
 };

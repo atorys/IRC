@@ -39,6 +39,14 @@ User * Channel::get_user_by_nickname(std::string nickname){
     return nullptr;
 }
 
+bool Channel::is_in_channel(User *user){
+    for (std::vector<User *>::iterator start = _userList.begin(); start != _userList.end(); start++){
+        if (user->get_socket() == (*start)->get_socket())
+            return true;
+    }
+    return false;
+}
+
 // bool Channel::is_banned(const std::string &nickname){
 //     for (std::set<std::string>::iterator castMask = _banList.begin();
 //         castMask != _banList.end(); ++castMask){
@@ -61,13 +69,16 @@ User * Channel::get_user_by_nickname(std::string nickname){
 //         }
 // }
 
-void Channel::removeUser(User *user){
+void Channel::removeUser(User *user, std::string msg){
     std::vector<User *>::iterator start = _userList.begin();
     std::vector<User *>::iterator end = _userList.end();
     while (start != end) {
         if ((*start)->get_socket() == user->get_socket()){
             _userList.erase(start);
-            sendAll((*start)->get_nickname() + " left out cute " + _channelName + " :'(");
+            if (msg.empty())
+                sendAll((*start)->get_nickname() + " left out cute " + _channelName + " :'(");
+            else
+                sendAll((*start)->get_nickname() + " left out cute " + _channelName + " :'(" + " reason: " + msg);
             break;
         }
     }

@@ -45,7 +45,6 @@ class Postman {
 #define RPL_NOTOPIC(channel)                    ("331 " + (channel) + " :No topic is set")
 #define RPL_TOPIC(channel, topic)               ("332 " + (channel) + " :" + (topic))
 
-
 //__ERRORS_____________________________________________________
 #define ERR_NOSUCHNICK(nickname)                ("401 " + (nickname) + " :No such nick/channel")
 #define ERR_NOSUCHCHANNEL(channel)              ("403 " + (channel) + " :No such channel")
@@ -55,7 +54,7 @@ class Postman {
 #define ERR_WASNOSUCHNICK(channel)              ("406 " + (channel) + " :There was no such nickname")
 #define ERR_TOOMANYTARGETS(nickname)            ("407 " + (nickname) + " :Duplicate recipients. No message delivered)"
 #define ERR_UNKNOWNCOMMAND(command)             ("421 " + (command) + " :Unknown command")
-
+#define ERR_CHANOPRIVSNEEDED(channel)           ("482 " + (channel) + ":You're not channel operator")
 //NICK
 #define ERR_NONICKNAMEGIVEN                     "431 :No nickname given"
 #define ERR_ERRONEUSNICKNAME(nickname)          ("432 " + (nickname) + " :Erroneus nickname")

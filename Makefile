@@ -19,7 +19,7 @@ SRCS	=	./Sources/app/main.cpp \
 			./Sources/service/commands/ison.cpp\
 			./Sources/service/commands/list.cpp\
 			./Sources/service/commands/topic.cpp\
-#			./Sources/service/commands/kick.cpp\
+			./Sources/service/commands/kick.cpp\
 
 HEADERS	=	./Sources/server/Server.hpp \
 			./Sources/service/Service.hpp\
