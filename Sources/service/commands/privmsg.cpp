@@ -20,9 +20,9 @@ void UsersService::privmsg(std::vector<std::string> args, int client_socket){
                 _postman->sendReply(client_socket, ERR_CANNOTSENDTOCHAN(args[1]));
     } else if (findChannelByName(args[1]) != nullptr) {
             Channel *channel = findChannelByName(args[1]);
-            std::set<User *> userList = channel->get_userlist();
-            std::set<User *> ::iterator start = userList.begin();
-            std::set<User *> ::iterator end = userList.end();
+            std::vector<User *> userList = channel->get_userlist();
+            std::vector<User *> ::iterator start = userList.begin();
+            std::vector<User *> ::iterator end = userList.end();
             while (start != end){
                 _postman->sendReply((*start)->get_socket(), _users[client_socket]->get_nickname() + " : " + args[2]);
                 start++;

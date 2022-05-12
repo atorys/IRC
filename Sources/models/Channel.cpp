@@ -3,21 +3,21 @@
 #include "../utility/utility.hpp"
 
 Channel::Channel(std::string const & channelName,
-                User *admin):
-                _maxUsersLimit(2000),
+                User *admin, Postman *postman):
+                _postman(postman),
                 _channelName(channelName) {
                 _userList.push_back(admin);
                 }
 
 void Channel::addUser(User *user){
-    sendAll(user->get_nickname() + " join to channel " + _channelName + " eZ clap!");
     _userList.push_back(user);
+    sendAll(user->get_nickname() + " join to channel " + _channelName + " eZ clap!");
 }
 
 const std::string &Channel::get_topic() const{ return _topic; }
 const std::string &Channel::get_channelname() const { return _channelName; }
-std::vector<User *> Channel::get_userlist(){ return _userList; }
-std::vector<User *>::size_type Channel::get_count_of_users(){ return _userList.size(); }
+std::vector<User *> &Channel::get_userlist(){ return _userList; }
+int Channel::get_count_of_users(){ return _userList.size(); }
 
 // bool Channel::is_invited(User * user){
 //     if (_inviteList.find(user) != _inviteList.end()){
@@ -89,7 +89,7 @@ void Channel::removeUser(User *user, std::string msg){
 
 void Channel::sendAll(std::string msg){
     for (std::vector<User *>::iterator start = _userList.begin(); start != _userList.end(); start++){
-        _postman.sendReply((*start)->get_socket(), msg);
+        _postman->sendReply((*start)->get_socket(), msg);
     }
 }
 
