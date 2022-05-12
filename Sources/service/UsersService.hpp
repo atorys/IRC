@@ -52,4 +52,5 @@ protected:
     void	ison(std::vector<std::string>, int);
     void	list(std::vector<std::string>, int);
     void	topic(std::vector<std::string>, int);
+    void    part(std::vector<std::string>, int);
 };
