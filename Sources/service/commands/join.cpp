@@ -1,6 +1,8 @@
 #include "../UsersService.hpp"
 
 void UsersService::join(std::vector<std::string> args, int client_socket){
+    if (!_users[client_socket]->is_authenticated())
+        _postman->sendReply(client_socket, ERR_NOLOGIN(_users[client_socket]->get_username()));
     if (args.size() != 2){
         _postman->sendReply(client_socket, ERR_NEEDMOREPARAMS(args[0]));
     } else {

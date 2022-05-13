@@ -10,8 +10,9 @@ void UsersService::kick(std::vector<std::string> args, int client_socket) {
             _postman->sendReply(client_socket, ERR_NOTONCHANNEL(args[1]));
         else if (findChannelByName(args[1])->get_userlist()[0]->get_socket() != client_socket)
             _postman->sendReply(client_socket, ERR_CHANOPRIVSNEEDED(args[1]));
-        else
-            findChannelByName(args[1])->removeUser(findUserByNickname(args[2]), "");
+        else {
+            findChannelByName(args[1])->removeUserFromChannel(findUserByNickname(args[2]), "");
+        }
     } else {
         if (findChannelByName(args[1]) == nullptr)
             _postman->sendReply(client_socket, ERR_NOSUCHCHANNEL(args[1]));
@@ -20,6 +21,6 @@ void UsersService::kick(std::vector<std::string> args, int client_socket) {
         else if (findChannelByName(args[1])->get_userlist()[0]->get_socket() != client_socket)
             _postman->sendReply(client_socket, ERR_CHANOPRIVSNEEDED(args[1]));
         else
-            findChannelByName(args[1])->removeUser(findUserByNickname(args[2]), args[3]);
+            findChannelByName(args[1])->removeUserFromChannel(findUserByNickname(args[2]), args[3]);
     }
 }

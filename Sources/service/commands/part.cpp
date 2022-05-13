@@ -11,7 +11,7 @@ void UsersService::part(std::vector<std::string> args, int client_socket){
             else if (!findChannelByName(*start)->is_in_channel(_users[client_socket]))
                 _postman->sendReply(client_socket, ERR_NOTONCHANNEL(*start));
             else
-                findChannelByName(*start)->removeUser(_users[client_socket], "");
+                findChannelByName(*start)->removeUserFromChannel(_users[client_socket], "");
         }
     }
 }
