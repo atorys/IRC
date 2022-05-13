@@ -25,7 +25,9 @@ void UsersService::nick(std::vector<std::string> args, int client_socket) {
         _postman->sendReply(client_socket, ERR_NONICKNAMEGIVEN);
 
     } else if (findUserByNickname(args[1]) != nullptr) {
-        _postman->sendReply(client_socket, ERR_NICKNAMEINUSE(args[1]));
+        _postman->sendReply(client_socket, ERR_NICKNAMEINUSE(_users[client_socket]->get_nickname().empty() ?
+                                                            "*" : _users[client_socket]->get_nickname(),
+                                                            args[1]));
 
     } else if (!isValidNickname(args[1])) {
         _postman->sendReply(client_socket, ERR_ERRONEUSNICKNAME(args[1]));
@@ -35,7 +37,7 @@ void UsersService::nick(std::vector<std::string> args, int client_socket) {
             _postman->sendReply(client_socket, RPL_MOTDSTART(args[1]));
             _postman->sendReply(client_socket, RPL_MOTD(args[1], "MESSAGE OF THE DAY HERE"));
             _postman->sendReply(client_socket, RPL_ENDOFMOTD(args[1]));
-            _postman->sendReply(client_socket, RPL_WELCOME(args[1]));
+            _postman->sendReply(client_socket, RPL_WELCOME(args[1], _users[client_socket]->get_username(), "kzn.21-school.ru"));
         }
         _users[client_socket]->set_nickname(args[1]);
     }

@@ -11,7 +11,7 @@ void UsersService::topic(std::vector<std::string> args, int client_socket) {
         _postman->sendReply(client_socket, ERR_NOLOGIN(_users[client_socket]->get_username()));
 
     } else if (args.size() < 2 || args.size() > 3) {
-        _postman->sendReply(client_socket, ERR_NEEDMOREPARAMS("TOPIC"));
+        _postman->sendReply(client_socket, ERR_NEEDMOREPARAMS(_users[client_socket]->get_nickname(), "TOPIC"));
 
     } else {
         Channel *channel;
@@ -24,9 +24,12 @@ void UsersService::topic(std::vector<std::string> args, int client_socket) {
 
         } else if (args.size() == 2) {
             if (channel->get_topic().empty())
-                _postman->sendReply(client_socket, RPL_NOTOPIC(channel->get_channelname()));
+                _postman->sendReply(client_socket, RPL_NOTOPIC(_users[client_socket]->get_nickname(),
+                                                               channel->get_channelname()));
             else
-                _postman->sendReply(client_socket, RPL_TOPIC(channel->get_channelname(), channel->get_topic()));
+                _postman->sendReply(client_socket, RPL_TOPIC(_users[client_socket]->get_nickname(),
+                                                             channel->get_channelname(),
+                                                             channel->get_topic()));
 
         } else {
             channel->set_topic(args[2]);

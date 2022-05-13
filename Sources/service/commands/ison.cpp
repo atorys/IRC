@@ -11,7 +11,7 @@ void UsersService::ison(std::vector<std::string> args, int client_socket) {
         _postman->sendReply(client_socket, ERR_NOLOGIN(_users[client_socket]->get_username()));
 
     } else if (args.size() == 1) {
-        _postman->sendReply(client_socket, ERR_NEEDMOREPARAMS("ISON"));
+        _postman->sendReply(client_socket, ERR_NEEDMOREPARAMS(_users[client_socket]->get_nickname(), "ISON"));
 
     } else {
         std::string nicknames;

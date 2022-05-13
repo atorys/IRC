@@ -2,7 +2,7 @@
 
 void UsersService::kick(std::vector<std::string> args, int client_socket) {
     if (args.size() != 4 && args.size() != 3){
-        _postman->sendReply(client_socket, ERR_NEEDMOREPARAMS(args[0]));
+        _postman->sendReply(client_socket, ERR_NEEDMOREPARAMS(_users[client_socket]->get_nickname(), args[0]));
     } else if (args.size() == 3){
         if (findChannelByName(args[1]) == nullptr)
             _postman->sendReply(client_socket, ERR_NOSUCHCHANNEL(args[1]));

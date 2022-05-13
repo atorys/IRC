@@ -32,16 +32,10 @@ void UsersService::addUser(int client_socket) {
     std::cout << "[CONNECTION #" << client_socket << "]\n";
 }
 
-// void UsersService::addChannelToList(Channel *newChannel){
-//     for (std::vector<Channel> :: iterator start = _channels.begin(); start != _channels.end(); start++){
-//         if (start->get_name() == args[1]){
-//                 Postman::sendReply(client_socket, ERR_ALREADYREGISTRED);
-//                 return;
-//             }
-//         }
-    
-//     _channels.push_back(newChannel);
-// };
+void UsersService::addChannel(Channel *channel) {
+    _channels.insert(channel);
+    std::cout << "[CHANNEL " << channel->get_channelname() << "]\n";
+}
 
 void UsersService::removeUser(int client_socket) {
     // delete from channels +

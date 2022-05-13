@@ -29,7 +29,7 @@ public:
     UsersService(const std::string&, Postman*);
     virtual ~UsersService() {};
 
-    void    addChannelToList(Channel *){};
+    void    addChannel(Channel *);
     void    addUser(int);
     void    removeUser(int);
     bool    isConnected(int);

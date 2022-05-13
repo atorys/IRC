@@ -15,13 +15,13 @@ void UsersService::user(std::vector<std::string> args, int client_socket) {
         }
         _users[client_socket]->set_realname(args[4]);
         _users[client_socket]->set_username(args[1]);
-        if (!_users[client_socket]->is_authenticated()) {
+        if (_users[client_socket]->is_authenticated()) {
             _postman->sendReply(client_socket, RPL_MOTDSTART(_users[client_socket]->get_nickname()));
             _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), "MESSAGE OF THE DAY HERE"));
             _postman->sendReply(client_socket, RPL_ENDOFMOTD(_users[client_socket]->get_nickname()));
-            _postman->sendReply(client_socket, RPL_WELCOME(_users[client_socket]->get_nickname()));
+            _postman->sendReply(client_socket, RPL_WELCOME(_users[client_socket]->get_nickname(), _users[client_socket]->get_username(), "kzn.21-school.ru"));
         }
     } else {
-        _postman->sendReply(client_socket, ERR_NEEDMOREPARAMS("USER"));
+        _postman->sendReply(client_socket, ERR_NEEDMOREPARAMS(_users[client_socket]->get_nickname(), "USER"));
     }
 }

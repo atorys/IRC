@@ -11,7 +11,7 @@ Channel::Channel(std::string const & channelName,
 
 void Channel::addUser(User *user){
     _userList.push_back(user);
-    sendAll(user->get_nickname() + " join to channel " + _channelName + " eZ clap!", true);
+//    sendAll(user->get_nickname() + " join to channel " + _channelName + " eZ clap!");
 }
 
 const std::string &Channel::get_topic() const{ return _topic; }
@@ -47,9 +47,9 @@ void Channel::removeUserFromChannel(User *user, std::string msg){
         if ((*start)->get_socket() == user->get_socket()){
             _userList.erase(start);
             if (msg.empty())
-                sendAll((*start)->get_nickname() + " left our cute " + _channelName + " :'(", false);
+                sendAll((*start)->get_nickname() + " left our cute " + _channelName + " :'(");
             else
-                sendAll((*start)->get_nickname() + " left our cute " + _channelName + " :'(" + " reason: " + msg, false);
+                sendAll((*start)->get_nickname() + " left our cute " + _channelName + " :'(" + " reason: " + msg);
             break; 
         }
         start++;
@@ -59,8 +59,8 @@ void Channel::removeUserFromChannel(User *user, std::string msg){
     }
 }
 
-void Channel::sendAll(const std::string& msg, bool skipLastUser){
-    for (std::vector<User *>::iterator start = _userList.begin(); start != _userList.end() - skipLastUser; start++){
+void Channel::sendAll(const std::string& msg) {
+    for (std::vector<User *>::iterator start = _userList.begin(); start != _userList.end(); start++){
         _postman->sendReply((*start)->get_socket(), msg);
     }
 }
