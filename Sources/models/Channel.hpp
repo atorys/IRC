@@ -17,7 +17,7 @@ class Channel {
         std::vector<User *>                     _userList;
 
     public:
-        Channel(std::string const &, User *, Postman *);
+        Channel(std::string const &, Postman *);
         ~Channel(){};
 
         void                            addUser(User *user);
@@ -28,7 +28,7 @@ class Channel {
         std::vector<User *>             &get_userlist();
         int                             get_count_of_users();
         User*                           get_user_by_nickname(std::string nickname);
-        void                            sendAll(const std::string& msg);
+        void                            sendAll(const std::string& msg, User*);
         bool                            is_in_channel(User *user);
         // bool is_invited(User * user);
 };

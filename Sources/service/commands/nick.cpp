@@ -19,18 +19,20 @@ bool    isValidNickname(const std::string& nick) {
  */
 void UsersService::nick(std::vector<std::string> args, int client_socket) {
     if (!_users[client_socket]->get_registred()) {
-        _postman->sendReply(client_socket, ERR_NOLOGIN(_users[client_socket]->get_username()));
+        _postman->sendReply(client_socket, ERR_NOTREGISTERED(_users[client_socket]->get_nickname().empty() ?
+                                                             "*" : _users[client_socket]->get_nickname()));
 
     } else if (args.size() < 2) {
-        _postman->sendReply(client_socket, ERR_NONICKNAMEGIVEN);
+        _postman->sendReply(client_socket, ERR_NONICKNAMEGIVEN(_users[client_socket]->get_nickname().empty() ?
+                                                               "*" : _users[client_socket]->get_nickname()));
 
     } else if (findUserByNickname(args[1]) != nullptr) {
         _postman->sendReply(client_socket, ERR_NICKNAMEINUSE(_users[client_socket]->get_nickname().empty() ?
-                                                            "*" : _users[client_socket]->get_nickname(),
-                                                            args[1]));
+                                                            "*" : _users[client_socket]->get_nickname(), args[1]));
 
     } else if (!isValidNickname(args[1])) {
-        _postman->sendReply(client_socket, ERR_ERRONEUSNICKNAME(args[1]));
+        _postman->sendReply(client_socket, ERR_ERRONEUSNICKNAME(_users[client_socket]->get_nickname().empty() ?
+                                                                "*" : _users[client_socket]->get_nickname(), args[1]));
 
     } else {
         if (!_users[client_socket]->is_authenticated() && !_users[client_socket]->get_username().empty()) {

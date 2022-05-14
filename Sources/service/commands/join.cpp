@@ -1,8 +1,20 @@
 #include "../UsersService.hpp"
 
+bool    isValidChannel(const std::string& channel) {
+    if (channel[0] != '#')
+        return false;
+
+    for (int i = 1; i < channel.length(); ++i) {
+        if (!std::isalnum(channel[i]))
+            return false;
+    }
+    return true;
+}
+
 void UsersService::join(std::vector<std::string> args, int client_socket){
     if (!_users[client_socket]->is_authenticated()) {
-        _postman->sendReply(client_socket, ERR_NOLOGIN(_users[client_socket]->get_username()));
+        _postman->sendReply(client_socket, ERR_NOTREGISTERED(_users[client_socket]->get_nickname().empty() ?
+                                                             "*" : _users[client_socket]->get_nickname()));
 
     } else if (args.size() != 2) {
         _postman->sendReply(client_socket, ERR_NEEDMOREPARAMS(_users[client_socket]->get_nickname(), args[0]));
@@ -13,23 +25,41 @@ void UsersService::join(std::vector<std::string> args, int client_socket){
 
         for (int i = 0; i < channelNames.size(); i++) {
 
-            if ((channel = findChannelByName(channelNames[i])) == nullptr) {
-                channel = new Channel(channelNames[i], _users[client_socket], _postman);
-                addChannel(channel);
-
-            } else {
-                channel->addUser(_users[client_socket]);
+            if (!isValidChannel(channelNames[i])) {
+                _postman->sendReply(client_socket,
+                                    ERR_NOSUCHCHANNEL(_users[client_socket]->get_nickname(), channelNames[i]));
+                continue;
             }
 
-            channel->sendAll(RPL_JOIN(_users[client_socket]->get_nickname(), channel->get_channelname()));
-            _postman->sendReply(client_socket, RPL_TOPIC(_users[client_socket]->get_nickname(),
-                                                         channel->get_channelname(),
-                                                         channel->get_topic()));
+            if ((channel = findChannelByName(channelNames[i])) == nullptr) {
+                channel = new Channel(channelNames[i], _postman);
+                addChannel(channel);
+            }
+
+            if (channel->is_in_channel(_users.at(client_socket))) {
+                _postman->sendReply(client_socket, ERR_USERONCHANNEL(_users[client_socket]->get_nickname(),
+                                                                     _users[client_socket]->get_nickname(),
+                                                                     channel->get_channelname()));
+                continue;
+            }
+            channel->addUser(_users.at(client_socket));
+            channel->sendAll(RPL_JOIN(_users[client_socket]->get_nickname(), channel->get_channelname()), nullptr);
+            if (channel->get_topic().empty()) {
+                _postman->sendReply(client_socket, RPL_NOTOPIC(_users[client_socket]->get_nickname(),
+                                                               channel->get_channelname()));
+            } else {
+                _postman->sendReply(client_socket, RPL_TOPIC(_users[client_socket]->get_nickname(),
+                                                             channel->get_channelname(),
+                                                             channel->get_topic()));
+            }
 
             std::vector<std::string> arg;
-            arg.push_back("NAMES");
-            arg.push_back(channel->get_channelname());
-            this->names(arg, client_socket);
+            for (std::vector<User *>::iterator it = channel->get_userlist().begin(); it != channel->get_userlist().end(); ++it) {
+                arg.clear();
+                arg.push_back("NAMES");
+                arg.push_back(channel->get_channelname());
+                UsersService::names(arg, (*it)->get_socket());
+            }
         }
     }
 }

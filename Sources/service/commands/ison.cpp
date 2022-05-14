@@ -8,7 +8,8 @@
  */
 void UsersService::ison(std::vector<std::string> args, int client_socket) {
     if (!_users[client_socket]->is_authenticated()) {
-        _postman->sendReply(client_socket, ERR_NOLOGIN(_users[client_socket]->get_username()));
+        _postman->sendReply(client_socket, ERR_NOTREGISTERED(_users[client_socket]->get_nickname().empty() ?
+                                                             "*" : _users[client_socket]->get_nickname()));
 
     } else if (args.size() == 1) {
         _postman->sendReply(client_socket, ERR_NEEDMOREPARAMS(_users[client_socket]->get_nickname(), "ISON"));

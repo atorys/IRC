@@ -2,12 +2,9 @@
 #include "algorithm"
 #include "../utility/utility.hpp"
 
-Channel::Channel(std::string const & channelName,
-                User *admin, Postman *postman):
+Channel::Channel(std::string const & channelName, Postman *postman):
                 _postman(postman),
-                _channelName(channelName) {
-                _userList.push_back(admin);
-                }
+                _channelName(channelName) {}
 
 void Channel::addUser(User *user){
     _userList.push_back(user);
@@ -17,7 +14,7 @@ void Channel::addUser(User *user){
 const std::string &Channel::get_topic() const{ return _topic; }
 const std::string &Channel::get_channelname() const { return _channelName; }
 std::vector<User *> &Channel::get_userlist(){ return _userList; }
-int Channel::get_count_of_users(){ return _userList.size(); }
+int Channel::get_count_of_users(){ return _userList.empty() ? 0 : (int)_userList.size(); }
 
 
 User * Channel::get_user_by_nickname(std::string nickname){
@@ -34,7 +31,7 @@ User * Channel::get_user_by_nickname(std::string nickname){
 
 bool Channel::is_in_channel(User *user){
     for (std::vector<User *>::iterator start = _userList.begin(); start != _userList.end(); start++){
-        if (user->get_socket() == (*start)->get_socket())
+        if (user == (*start))
             return true;
     }
     return false;
@@ -42,26 +39,20 @@ bool Channel::is_in_channel(User *user){
 
 void Channel::removeUserFromChannel(User *user, std::string msg){
     std::vector<User *>::iterator start = _userList.begin();
-    std::vector<User *>::iterator end = _userList.end();
-    while (start != end) {
-        if ((*start)->get_socket() == user->get_socket()){
+    while (start != _userList.end()) {
+        if ((*start) == user) {
+            sendAll(RPL_PART(user->get_nickname(), this->_channelName, msg), nullptr);
             _userList.erase(start);
-            if (msg.empty())
-                sendAll((*start)->get_nickname() + " left our cute " + _channelName + " :'(");
-            else
-                sendAll((*start)->get_nickname() + " left our cute " + _channelName + " :'(" + " reason: " + msg);
-            break; 
+            break;
         }
         start++;
     }
-    if (get_count_of_users() == 0){
-        delete(this);//здесь нужно в uservices почистить вектор каналов иначе он будет обращаться к участку памяти который зафришен->сега
-    }
 }
 
-void Channel::sendAll(const std::string& msg) {
+void Channel::sendAll(const std::string& msg, User *skippedUser) {
     for (std::vector<User *>::iterator start = _userList.begin(); start != _userList.end(); start++){
-        _postman->sendReply((*start)->get_socket(), msg);
+        if (*start != skippedUser)
+            _postman->sendReply((*start)->get_socket(), msg);
     }
 }
 

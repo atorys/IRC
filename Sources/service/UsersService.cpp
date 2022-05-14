@@ -24,6 +24,7 @@ UsersService::UsersService(const std::string& password, Postman* postman)
     _commands["NAMES"] = &UsersService::names;
     _commands["TOPIC"] = &UsersService::topic;
     _commands["PART"] = &UsersService::part;
+    _commands["WHO"] = &UsersService::who;
     _commands["BOT"] = &UsersService::bot;
 }
 
@@ -33,25 +34,43 @@ void UsersService::addUser(int client_socket) {
 }
 
 void UsersService::addChannel(Channel *channel) {
-    _channels.insert(channel);
+    _channels.push_back(channel);
     std::cout << "[CHANNEL " << channel->get_channelname() << "]\n";
 }
 
-void UsersService::removeUser(int client_socket) {
-    // delete from channels +
-    for (std::set<Channel *>::iterator start = _channels.begin(); start != _channels.end(); start++){
-        (*start)->removeUserFromChannel(_users[client_socket], "");
+void UsersService::removeEmptyChannels() {
+    for (std::vector<Channel *>::iterator start = _channels.begin(); start != _channels.end(); ) {
+
+        if ((*start)->get_count_of_users() == 0) {
+            std::cout << "\033[37m[CHANNEL " << (*start)->get_channelname() << " ERASED]\033[0m\n";
+            delete (*start);
+            start = _channels.erase(start);
+
+        } else {
+            start++;
+        }
     }
-    //по идее здесь он будет проходиться по всем каналам и будет пробовать удалить данного юзера из всех каналов,
-    //но было бы логичнее добавить юзеру список каналов в которых он находиться и из него добавлять, учитывая то,
-    //что в нашей ирке не будет много каналов можно оставить и так
+}
+
+void UsersService::removeUser(int client_socket) {
+    std::cout << "\033[37m///////////////\nerasing " + _users[client_socket]->get_nickname() + '\n';
+
+    for (std::vector<Channel *>::iterator start = _channels.begin(); start != _channels.end(); start++) {
+        if ((*start)->is_in_channel(_users[client_socket])) {
+            (*start)->removeUserFromChannel(_users[client_socket], "QUITED");
+        }
+    }
+    removeEmptyChannels();
+
+    std::cout << "\033[37m";
     if (_users[client_socket]->get_nickname().empty())
         std::cout << "user " << client_socket << " just left\n";
     else
         std::cout << _users[client_socket]->get_nickname() << " just left\n";
+    std::cout << "///////////////\n\033[0m";
+
     delete _users.at(client_socket);
     _users.erase(client_socket);
-    
 }
 
 bool UsersService::isConnected(int client_socket) {
@@ -69,7 +88,7 @@ User *UsersService::findUserByNickname(const std::string& nickname) {
 }
 
 Channel *UsersService::findChannelByName(const std::string &name){
-    std::set<Channel *>::iterator start;
+    std::vector<Channel *>::iterator start;
     for (start = _channels.begin(); start != _channels.end(); start++){
         if ((*start)->get_channelname() == name){
             return *start;
@@ -87,6 +106,7 @@ void UsersService::processRequest(std::string request, int client_socket) {
     if (_commands.find(arguments[0]) != _commands.end()) {
         (this->*_commands[arguments[0]])(arguments, client_socket);
     } else {
-        _postman->sendReply(client_socket, ERR_UNKNOWNCOMMAND(arguments[0]));
+        _postman->sendReply(client_socket, ERR_UNKNOWNCOMMAND(_users[client_socket]->get_nickname(), arguments[0]));
     }
+    removeEmptyChannels();
 }
