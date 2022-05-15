@@ -37,11 +37,10 @@ bool Channel::is_in_channel(User *user){
     return false;
 }
 
-void Channel::removeUserFromChannel(User *user, std::string msg){
+void Channel::removeUserFromChannel(User *user){
     std::vector<User *>::iterator start = _userList.begin();
     while (start != _userList.end()) {
         if ((*start) == user) {
-            sendAll(RPL_PART(user->get_nickname(), this->_channelName, msg), nullptr);
             _userList.erase(start);
             break;
         }

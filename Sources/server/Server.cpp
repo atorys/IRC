@@ -5,6 +5,7 @@
 #include "Server.hpp"
 #include "netinet/in.h"
 #include "sys/socket.h"
+#include <netdb.h>
 #include "unistd.h"
 #include "fcntl.h"
 #include <cstring>
@@ -74,7 +75,7 @@ void Server::init() {
 
 	createSocket();
 	gethostname(&buff[0], buffSize);
-	printf("server started as:\033[32m%s\033[0m:\033[32m%s\033[0m\n\n", buff, _port.c_str());
+	printf("server started as:%s%s%s:%s%s%s\n\n", GREEN_COL, buff, NO_COL, GREEN_COL, _port.c_str(), NO_COL);
 
 	// marks socket as PASSIVE to accept the connections
 	if (listen(_socket, maxConnections) < 0) {
@@ -121,7 +122,13 @@ void Server::add() {
 	}
 
     _polls.push_back((pollfd){client_socket, POLLIN | POLLOUT | POLLHUP, 0});
-    _service->addUser(client_socket);
+
+    char host[buffSize];
+    if (getnameinfo((struct sockaddr *) &clientaddr, len, &host[0], buffSize, nullptr, 0, 0)) {
+        std::cerr << "getnameinfo failure" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    _service->addUser(client_socket, host);
 }
 
 void Server::remove(std::vector<pollfd>::iterator pollsIter) {
@@ -159,6 +166,6 @@ void Server::sendback(int client_socket) {
             std::cerr << "send message to client failure\n";
             exit(EXIT_FAILURE);
         }
-        std::cout << "\033[37m" << reply << "\033[0m";
+        std::cout << GREY_COL << reply << NO_COL;
     }
 }

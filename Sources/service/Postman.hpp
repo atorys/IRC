@@ -5,6 +5,9 @@
 #pragma once
 #include <iostream>
 #include <map>
+#define GREY_COL "\033[37m"
+#define GREEN_COL "\033[32m"
+#define NO_COL "\033[0m"
 
 
 /*
@@ -30,7 +33,7 @@ class Postman {
 };
 
 //__REPLIES____________________________________________________
-#define RPL_WELCOME(nickname, username, host)           (":ircserv 001 " + (nickname) + " :Welcome to the IRCServ, " + (nickname) + '!' + (username) + '@' + (host))
+#define RPL_WELCOME(nickname)                           (":ircserv 001 " + (nickname) + " :Welcome to the IRCServ, " + (nickname))
 #define RPL_MOTDSTART(nickname)                         (":ircserv 375 " + (nickname) + " :- Message of the day -")
 #define RPL_MOTD(nickname, message)                     (":ircserv 372 " + (nickname) + " :- " + (message))
 #define RPL_ENDOFMOTD(nickname)                         (":ircserv 376 " + (nickname) + " :- End of /MOTD command")
@@ -56,6 +59,7 @@ class Postman {
 #define RPL_PRIVMSG(sender, recipient, msg)             (":" + (sender) + " PRIVMSG " + (recipient) + " :"+ (msg))
 #define RPL_JOIN(nickname, channel)                     (":" + (nickname) + " JOIN " + (channel))
 #define RPL_PART(nickname, channel, reason)             (":" + (nickname) + " PART " + (channel) + " :" + (reason))
+#define RPL_KICK(nickname, channel, user, reason)       (":" + (nickname) + " KICK " + (channel) + ' ' + (user) + " :" + (reason))
 
 //__ERRORS_____________________________________________________
 #define ERR_NOSUCHNICK(nickname, nick)                  (":ircserv 401 " + (nickname) + ' ' + (nick) + " :No such nick/channel")

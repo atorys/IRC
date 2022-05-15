@@ -4,8 +4,8 @@
 
 #include "User.hpp"
 
-User::User(int socket) :
-			_socket(socket), _registred(false), _connected(true) {}
+User::User(int socket, const std::string& host) :
+			_socket(socket), _registred(false), _connected(true), _host(host) {}
 
 User::~User() {}
 
@@ -27,3 +27,7 @@ void User::set_realname(const std::string &realname) { this->_realname = realnam
 void User::set_registred(bool value) {this->_registred = value;}
 void User::set_connected(bool connected) { this->_connected = connected; }
 void User::set_awayMessage(const std::string &awayMsg) { this->_awayMessage = awayMsg; }
+
+std::string User::get_fullname() const {
+    return (_nickname + '!' + _username + '@' + _host);
+}
