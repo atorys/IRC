@@ -35,12 +35,8 @@ void UsersService::nick(std::vector<std::string> args, int client_socket) {
                                                                 "*" : _users[client_socket]->get_nickname(), args[1]));
 
     } else {
-        if (!_users[client_socket]->is_authenticated() && !_users[client_socket]->get_username().empty()) {
-            _postman->sendReply(client_socket, RPL_MOTDSTART(args[1]));
-            _postman->sendReply(client_socket, RPL_MOTD(args[1], "MESSAGE OF THE DAY HERE"));
-            _postman->sendReply(client_socket, RPL_ENDOFMOTD(args[1]));
-            _postman->sendReply(client_socket, RPL_WELCOME(args[1], _users[client_socket]->get_username(), "kzn.21-school.ru"));
-        }
+        if (!_users[client_socket]->is_authenticated() && !_users[client_socket]->get_username().empty())
+            welcomeUser(client_socket);
         _users[client_socket]->set_nickname(args[1]);
     }
 }

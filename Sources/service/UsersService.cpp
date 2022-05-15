@@ -57,7 +57,8 @@ void UsersService::removeUser(int client_socket) {
 
     for (std::vector<Channel *>::iterator start = _channels.begin(); start != _channels.end(); start++) {
         if ((*start)->is_in_channel(_users[client_socket])) {
-            (*start)->removeUserFromChannel(_users[client_socket], "QUITED");
+            (*start)->removeUserFromChannel(_users[client_socket]);
+            (*start)->sendAll(RPL_PART(_users[client_socket]->get_nickname(), (*start)->get_channelname(), "QUITED"), nullptr);
         }
     }
     removeEmptyChannels();
@@ -109,4 +110,27 @@ void UsersService::processRequest(std::string request, int client_socket) {
         _postman->sendReply(client_socket, ERR_UNKNOWNCOMMAND(_users[client_socket]->get_nickname(), arguments[0]));
     }
     removeEmptyChannels();
+}
+
+void UsersService::welcomeUser(int client_socket) {
+    _postman->sendReply(client_socket, RPL_MOTDSTART(_users[client_socket]->get_nickname()));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), " .              +   .                .   . .     .  ."));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), "                   .                    .       .     *"));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), "  .       *                        . . . .  .   .  + ."));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), "            \"You Are Here\"            .   .  +  . . ."));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), ".                 |             .  .   .    .    . ."));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), "                  |           .     .     . +.    +  ."));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), "                 \\|/            .       .   . ."));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), "        . .       V          .    * . . .  .  +   ."));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), "           +      .           .   .      +"));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), "                            .       . +  .+. ."));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), "  .                      .     . + .  . .     .      ."));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), "           .      .    .     . .   . . .        ! /"));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), "      *             .    . .  +    .  .       - O -"));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), "          .     .    .  +   . .  *  .       . / |"));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), "               . + .  .  .  .. +  ."));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), ".      .  .  .  *   .  *  . +..  .            *"));
+    _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), " .      .   . .   .   .   . .  +   .    .            +"));
+    _postman->sendReply(client_socket, RPL_ENDOFMOTD(_users[client_socket]->get_nickname()));
+    _postman->sendReply(client_socket, RPL_WELCOME(_users[client_socket]->get_nickname(), _users[client_socket]->get_username(), "kzn.21-school.ru"));
 }

@@ -32,6 +32,7 @@ public:
     void        addUser(int);
     void        removeUser(int);
     bool        isConnected(int);
+    void        welcomeUser(int);
     User*       findUserByNickname(const std::string&);
 
     void        addChannel(Channel *);

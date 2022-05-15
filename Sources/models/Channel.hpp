@@ -21,7 +21,7 @@ class Channel {
         ~Channel(){};
 
         void                            addUser(User *user);
-        void                            removeUserFromChannel(User *user, std::string msg);
+        void                            removeUserFromChannel(User *user);
         void                            set_topic(const std::string &topic);
         std::string const               &get_topic() const;
         std::string const               &get_channelname() const;
