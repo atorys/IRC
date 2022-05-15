@@ -1,5 +1,11 @@
 #include "../UsersService.hpp"
 
+/*
+ * Вызывается только оператором канала и удаляет из него юзера
+ *
+ * @Command: KICK
+ * @Parameters: <channel> <nickname> {<reason>}
+ */
 void UsersService::kick(std::vector<std::string> args, int client_socket) {
     if (!_users[client_socket]->is_authenticated()) {
         _postman->sendReply(client_socket, ERR_NOTREGISTERED(_users[client_socket]->get_nickname().empty() ?

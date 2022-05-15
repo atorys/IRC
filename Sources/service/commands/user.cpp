@@ -1,5 +1,11 @@
 #include "../UsersService.hpp"
 
+/*
+ * Устанавливает юзернейм и реальное имя пользователя для регистрации
+ *
+ * @Command: USER
+ * @Parameters: <username> <host> <server> :<realname>
+ */
 void UsersService::user(std::vector<std::string> args, int client_socket) {
     if (!_users[client_socket]->get_registred()) {
         _postman->sendReply(client_socket, ERR_NOTREGISTERED(_users[client_socket]->get_nickname().empty() ?

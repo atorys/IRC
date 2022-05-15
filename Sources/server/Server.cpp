@@ -53,8 +53,6 @@ void Server::start() {
                 receive(iter->fd);
 
             if (!processed(iter->fd)) {
-                if (iter->revents & POLLOUT)
-                    sendback(iter->fd);
                 remove(iter);
                 break;
             }

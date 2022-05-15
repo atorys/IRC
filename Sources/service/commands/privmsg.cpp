@@ -1,5 +1,11 @@
 #include "../UsersService.hpp"
 
+/*
+ * Отправляет личное сообщение, учитывая автоматический ответ
+ *
+ * @Command: PRIVMSG
+ * @Parameters: <nickname> :<message>
+ */
 void UsersService::privmsg(std::vector<std::string> args, int client_socket){
     if (!_users[client_socket]->is_authenticated()) {
         _postman->sendReply(client_socket, ERR_NOTREGISTERED(_users[client_socket]->get_nickname().empty() ?

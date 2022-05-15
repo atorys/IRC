@@ -1,5 +1,11 @@
 #include "../UsersService.hpp"
 
+/*
+ * Покинуть канал
+ *
+ * @Command: PART
+ * @Parameters: <nickname> {reason}
+ */
 void UsersService::part(std::vector<std::string> args, int client_socket){
     if (!_users[client_socket]->is_authenticated()) {
         _postman->sendReply(client_socket, ERR_NOTREGISTERED(_users[client_socket]->get_nickname().empty() ?

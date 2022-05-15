@@ -4,7 +4,7 @@ bool    isValidNickname(const std::string& nick) {
     const std::string spec = "-[]^{}";
     if (nick.length() > 9)
         return false;
-    for (int i = 0; i < nick.length(); ++i) {
+    for (unsigned long i = 0; i < nick.length(); ++i) {
         if (!std::isalnum(nick[i]) && spec.find(nick[i]) == std::string::npos)
             return false;
     }

@@ -4,13 +4,19 @@ bool    isValidChannel(const std::string& channel) {
     if (channel[0] != '#')
         return false;
 
-    for (int i = 1; i < channel.length(); ++i) {
+    for (unsigned long i = 1; i < channel.length(); ++i) {
         if (!std::isalnum(channel[i]))
             return false;
     }
     return true;
 }
 
+/*
+ * Добавляет юзера в канал, а если такого канала не существует, создает его
+ *
+ * @Command: JOIN
+ * @Parameters: <channel> {,<channels>}
+ */
 void UsersService::join(std::vector<std::string> args, int client_socket){
     if (!_users[client_socket]->is_authenticated()) {
         _postman->sendReply(client_socket, ERR_NOTREGISTERED(_users[client_socket]->get_nickname().empty() ?
@@ -23,7 +29,7 @@ void UsersService::join(std::vector<std::string> args, int client_socket){
         std::vector<std::string> channelNames = ut::split(args[1], ",");
         Channel *channel = nullptr;
 
-        for (int i = 0; i < channelNames.size(); i++) {
+        for (unsigned long i = 0; i < channelNames.size(); i++) {
 
             if (!isValidChannel(channelNames[i])) {
                 _postman->sendReply(client_socket,

@@ -2,6 +2,9 @@
 
 /*
  * Регистрирует соединение клиента с сервером
+ *
+ * @Command: PASS
+ * @Parameters: <password>
  */
 void UsersService::pass(std::vector<std::string> args, int client_socket) {
     if (_users[client_socket]->get_registred()) {

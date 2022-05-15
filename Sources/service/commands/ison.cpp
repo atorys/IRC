@@ -16,7 +16,7 @@ void UsersService::ison(std::vector<std::string> args, int client_socket) {
 
     } else {
         std::string nicknames;
-        for (int i = 1; i < args.size(); ++i) {
+        for (unsigned long  i = 1; i < args.size(); ++i) {
             if (findUserByNickname(args[i]) != nullptr)
                 nicknames += ' ' + args[i];
         }
