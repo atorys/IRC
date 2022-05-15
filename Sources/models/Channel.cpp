@@ -2,54 +2,58 @@
 #include "algorithm"
 #include "../utility/utility.hpp"
 
-Channel::Channel(std::string const & channelName,
-                User *admin):
-                _maxUsersLimit(2000),
-                _channelName(channelName) {
-                    std::cout << channelName << ": created!" << "\n";
-                _userList.insert(admin);
-                }
+Channel::Channel(std::string const & channelName, Postman *postman):
+                _postman(postman),
+                _channelName(channelName) {}
 
-bool Channel::is_invited(User * user){
-    if (_inviteList.find(user) != _inviteList.end()){
-        _inviteList.erase(user);
-        return true;
-    }
-    return false;
+void Channel::addUser(User *user){
+    _userList.push_back(user);
+//    sendAll(user->get_nickname() + " join to channel " + _channelName + " eZ clap!");
 }
 
-User * Channel::get_user_by_username(std::string nickname){
-    std::set<User *> ::iterator start = _userList.begin();
-    std::set<User *> ::iterator end = _userList.end();
+const std::string &Channel::get_topic() const{ return _topic; }
+const std::string &Channel::get_channelname() const { return _channelName; }
+std::vector<User *> &Channel::get_userlist(){ return _userList; }
+int Channel::get_count_of_users(){ return _userList.empty() ? 0 : (int)_userList.size(); }
+
+
+User * Channel::get_user_by_nickname(std::string nickname){
+    std::vector<User *> ::iterator start = _userList.begin();
+    std::vector<User *> ::iterator end = _userList.end();
     nickname = ut::to_lower(nickname);
     while (start != end) {
-        if (nickname == (*start)->get_username())
+        if (nickname == (*start)->get_nickname())
             return *start;
         start++;
     }
     return nullptr;
 }
 
-bool Channel::is_banned(const std::string &nickname){
-    for (std::set<std::string>::iterator castMask = _banList.begin();
-        castMask != _banList.end(); ++castMask){
-            if (ut::wildcard(*castMask, nickname)){
-                return true;
-            }
+bool Channel::is_in_channel(User *user){
+    for (std::vector<User *>::iterator start = _userList.begin(); start != _userList.end(); start++){
+        if (user == (*start))
+            return true;
     }
     return false;
 }
 
-void Channel::remove_from_banList(std::string const &ban){
-    check:
-        std::set<std::string>::iterator castMaskInList = _banList.begin();
-        while (castMaskInList != _banList.end()) {
-            if (ut::wildcard(*castMaskInList, ban)) {
-                _banList.erase(castMaskInList);
-                goto check;
-            }
-            ++castMaskInList;
+void Channel::removeUserFromChannel(User *user, std::string msg){
+    std::vector<User *>::iterator start = _userList.begin();
+    while (start != _userList.end()) {
+        if ((*start) == user) {
+            sendAll(RPL_PART(user->get_nickname(), this->_channelName, msg), nullptr);
+            _userList.erase(start);
+            break;
         }
+        start++;
+    }
+}
+
+void Channel::sendAll(const std::string& msg, User *skippedUser) {
+    for (std::vector<User *>::iterator start = _userList.begin(); start != _userList.end(); start++){
+        if (*start != skippedUser)
+            _postman->sendReply((*start)->get_socket(), msg);
+    }
 }
 
 void Channel::set_topic(const std::string &topic) {

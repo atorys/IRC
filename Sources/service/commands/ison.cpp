@@ -8,10 +8,11 @@
  */
 void UsersService::ison(std::vector<std::string> args, int client_socket) {
     if (!_users[client_socket]->is_authenticated()) {
-        _postman->sendReply(client_socket, ERR_NOLOGIN(_users[client_socket]->get_username()));
+        _postman->sendReply(client_socket, ERR_NOTREGISTERED(_users[client_socket]->get_nickname().empty() ?
+                                                             "*" : _users[client_socket]->get_nickname()));
 
     } else if (args.size() == 1) {
-        _postman->sendReply(client_socket, ERR_NEEDMOREPARAMS("ISON"));
+        _postman->sendReply(client_socket, ERR_NEEDMOREPARAMS(_users[client_socket]->get_nickname(), "ISON"));
 
     } else {
         std::string nicknames;
@@ -19,6 +20,6 @@ void UsersService::ison(std::vector<std::string> args, int client_socket) {
             if (findUserByNickname(args[i]) != nullptr)
                 nicknames += ' ' + args[i];
         }
-        _postman->sendReply(client_socket, RPL_ISON(nicknames));
+        _postman->sendReply(client_socket, RPL_ISON(_users[client_socket]->get_nickname(), nicknames));
     }
 }

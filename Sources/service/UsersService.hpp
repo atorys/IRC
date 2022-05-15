@@ -22,20 +22,23 @@ class UsersService : public Service {
 
     std::map<int, User*>				_users;
     std::map<std::string, commandPtr>   _commands;
-    std::set<Channel *>              _channels;
+    std::vector<Channel *>              _channels;
 
 public:
 
     UsersService(const std::string&, Postman*);
     virtual ~UsersService() {};
 
-    void    addChannelToList(Channel *){};
-    void    addUser(int);
-    void    removeUser(int);
-    bool    isConnected(int);
-    User*   findUserByNickname(const std::string&);
-    Channel* findChannelByName(const std::string&);
-    void    processRequest(std::string request, int client_socket);
+    void        addUser(int);
+    void        removeUser(int);
+    bool        isConnected(int);
+    User*       findUserByNickname(const std::string&);
+
+    void        addChannel(Channel *);
+    void        removeEmptyChannels();
+    Channel*    findChannelByName(const std::string&);
+
+    void        processRequest(std::string request, int client_socket);
 
 protected:
 
@@ -43,13 +46,18 @@ protected:
     void	user(std::vector<std::string>, int);
     void	nick(std::vector<std::string>, int);
     void	join(std::vector<std::string>, int);
-    void	kick(std::vector<std::string>, int){};
+    void	kick(std::vector<std::string>, int);
     void	privmsg(std::vector<std::string>, int);
     void	notice(std::vector<std::string>, int);
     void	away(std::vector<std::string>, int);
     void	ping(std::vector<std::string>, int);
+    void	pong(std::vector<std::string>, int){};
     void	quit(std::vector<std::string>, int);
     void	ison(std::vector<std::string>, int);
     void	list(std::vector<std::string>, int);
+    void	names(std::vector<std::string>, int);
     void	topic(std::vector<std::string>, int);
+    void    part(std::vector<std::string>, int);
+    void    who(std::vector<std::string>, int){};
+    void    bot(std::vector<std::string>, int){};
 };

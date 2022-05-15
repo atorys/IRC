@@ -87,6 +87,10 @@ std::vector<std::string> ut::splitForCmd(std::string &request){
             request.erase(request.find(':') - 1, request.size() - 1);
         }
         while (!request.empty()) {
+            if (request[0] == ' '){
+                request.erase(0);
+                continue;
+            }
             if (request.find(' ') != std::string::npos) {
                 arguments.push_back(request.substr(0, request.find(' ')));
                 request.erase(0, request.find(' ') + 1);
