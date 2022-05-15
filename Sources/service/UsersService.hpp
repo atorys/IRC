@@ -10,7 +10,6 @@
 #include "../models/Channel.hpp"
 #include "../utility/utility.hpp"
 #include <map>
-#include <set>
 #include <vector>
 
 class UsersService : public Service {
@@ -29,7 +28,7 @@ public:
     UsersService(const std::string&, Postman*);
     virtual ~UsersService() {};
 
-    void        addUser(int);
+    void        addUser(int, const std::string&);
     void        removeUser(int);
     bool        isConnected(int);
     void        welcomeUser(int);
