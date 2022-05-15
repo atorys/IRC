@@ -20,7 +20,6 @@ UsersService::UsersService(const std::string& password, Postman* postman)
     _commands["PONG"] = &UsersService::pong;
     _commands["QUIT"] = &UsersService::quit;
     _commands["ISON"] = &UsersService::ison;
-    _commands["LIST"] = &UsersService::list;
     _commands["NAMES"] = &UsersService::names;
     _commands["TOPIC"] = &UsersService::topic;
     _commands["PART"] = &UsersService::part;

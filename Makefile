@@ -17,7 +17,6 @@ SRCS	=	./Sources/app/main.cpp \
 			./Sources/service/commands/quit.cpp\
 			./Sources/service/commands/join.cpp\
 			./Sources/service/commands/ison.cpp\
-			./Sources/service/commands/list.cpp\
 			./Sources/service/commands/names.cpp\
 			./Sources/service/commands/topic.cpp\
 			./Sources/service/commands/kick.cpp\

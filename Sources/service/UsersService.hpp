@@ -54,7 +54,6 @@ protected:
     void	pong(std::vector<std::string>, int){};
     void	quit(std::vector<std::string>, int);
     void	ison(std::vector<std::string>, int);
-    void	list(std::vector<std::string>, int);
     void	names(std::vector<std::string>, int);
     void	topic(std::vector<std::string>, int);
     void    part(std::vector<std::string>, int);

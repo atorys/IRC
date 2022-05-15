@@ -35,8 +35,11 @@ void UsersService::nick(std::vector<std::string> args, int client_socket) {
                                                                 "*" : _users[client_socket]->get_nickname(), args[1]));
 
     } else {
-        if (!_users[client_socket]->is_authenticated() && !_users[client_socket]->get_username().empty())
+        if (!_users[client_socket]->is_authenticated() && !_users[client_socket]->get_username().empty()) {
+            _users[client_socket]->set_nickname(args[1]);
             welcomeUser(client_socket);
-        _users[client_socket]->set_nickname(args[1]);
+        } else {
+            _users[client_socket]->set_nickname(args[1]);
+        }
     }
 }

@@ -43,15 +43,10 @@ void UsersService::join(std::vector<std::string> args, int client_socket){
                 continue;
             }
             channel->addUser(_users.at(client_socket));
-            channel->sendAll(RPL_JOIN(_users[client_socket]->get_nickname(), channel->get_channelname()), nullptr);
-            if (channel->get_topic().empty()) {
-                _postman->sendReply(client_socket, RPL_NOTOPIC(_users[client_socket]->get_nickname(),
-                                                               channel->get_channelname()));
-            } else {
-                _postman->sendReply(client_socket, RPL_TOPIC(_users[client_socket]->get_nickname(),
-                                                             channel->get_channelname(),
-                                                             channel->get_topic()));
-            }
+            channel->sendAll(RPL_JOIN(_users[client_socket]->get_fullname(), channel->get_channelname()), nullptr);
+            _postman->sendReply(client_socket, RPL_TOPIC(_users[client_socket]->get_nickname(),
+                                                         channel->get_channelname(),
+                                                         channel->get_topic()));
 
             std::vector<std::string> arg;
             for (std::vector<User *>::iterator it = channel->get_userlist().begin(); it != channel->get_userlist().end(); ++it) {

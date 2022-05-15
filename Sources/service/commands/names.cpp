@@ -13,17 +13,14 @@ void UsersService::names(std::vector<std::string> args, int client_socket) {
                                                              "*" : _users[client_socket]->get_nickname()));
 
     } else {
-        std::string nicknames;
         std::vector<User *> userList;
 
         if (args.size() == 1) {
             for (std::vector<Channel *>::iterator it = _channels.begin(); it != _channels.end(); ++it) {
-                nicknames.clear();
                 userList = (*it)->get_userlist();
                 for (std::vector<User *>::iterator i = userList.begin(); i != userList.end(); ++i) {
-                    nicknames += ' ' + (*i)->get_nickname();
+                    _postman->sendReply(client_socket, RPL_NAMREPLY(_users[client_socket]->get_nickname(), (*it)->get_channelname(), (*i)->get_fullname()));
                 }
-                _postman->sendReply(client_socket, RPL_NAMREPLY(_users[client_socket]->get_nickname(), (*it)->get_channelname(), nicknames));
                 _postman->sendReply(client_socket, RPL_ENDOFNAMES(_users[client_socket]->get_nickname(), (*it)->get_channelname()));
             }
         } else {
@@ -33,7 +30,7 @@ void UsersService::names(std::vector<std::string> args, int client_socket) {
                 if ((channel = findChannelByName(*it)) != nullptr) {
                     userList = channel->get_userlist();
                     for (std::vector<User *>::iterator i = userList.begin(); i != userList.end(); ++i) {
-                        _postman->sendReply(client_socket, RPL_NAMREPLY(_users[client_socket]->get_nickname(), channel->get_channelname(), (*i)->get_nickname()));
+                        _postman->sendReply(client_socket, RPL_NAMREPLY(_users[client_socket]->get_nickname(), channel->get_channelname(), (*i)->get_fullname()));
                     }
                     _postman->sendReply(client_socket, RPL_ENDOFNAMES(_users[client_socket]->get_nickname(), channel->get_channelname()));
                 } else {
