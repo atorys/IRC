@@ -18,7 +18,9 @@ class Bot{
         std::string _port;
         std::string _pass;
         std::string _incomeBuff;
-
+        std::string _currentType;
+        std::string _request;
+        bool        _is_auth_confirmed;
         int _BotSocket;
         std::string _replymessage;
     public:
@@ -27,8 +29,10 @@ class Bot{
             std::cout << "bye\n";
             close(_BotSocket);
         };
+        std::string getRequest();
         void run();
         void reply();
         void getMessage();
         void parse();
+        void execute();
 };
