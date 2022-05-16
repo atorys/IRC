@@ -1,13 +1,17 @@
 #include "Bot.hpp"
+#include <list>
 
 static void Error(std::string msg){
     std::cout << "Error: " << msg << "\n";
     exit(1);
 }
 
-static std::string Jokes[][2] = {
-{"Почему неудобно спать в бетономешалке?."},
-{"Кто ноет, тот говна не стоит"},
+static std::string Jokes[][20] = {
+{"kekis"},
+{"kekis1"},
+{"kekis2"},
+{"kekis3"},
+{"kekis4"},
 };
 
 Bot::Bot(std::string hostname, std::string port, std::string pass): 
@@ -22,8 +26,8 @@ Bot::Bot(std::string hostname, std::string port, std::string pass):
     std::vector<std::string> splittedaddres = ut::split(hostname, ".");
     sockaddr_in address = {std::atoi(splittedaddres[0].c_str()), 
                     std::atoi(splittedaddres[1].c_str()),
-                    {std::atoi(splittedaddres[2].c_str())},
-                    {std::atoi(splittedaddres[3].c_str())}};
+                    std::atoi(splittedaddres[2].c_str()),
+                    {std::atoi(splittedaddres[3].c_str())}, {}};
     address.sin_family = AF_INET;
     address.sin_port = htons(std::atoi(_port.c_str()));
     if (inet_aton(host->h_name, &address.sin_addr) == 0)
@@ -76,7 +80,6 @@ std::string Bot::getRequest() {
 
 void Bot::parse(){
     _request = getRequest();
-    std::cout << _request << "\n";
     if (_request.find("PRIVMSG") != std::string::npos || _request.find("NOTICE") != std::string::npos){
         _currentType = "PRIVMSG";
     } else if (_request.find(":ircserv 375 BOT :- Message of the day -") != std::string::npos) {
@@ -88,16 +91,24 @@ void Bot::parse(){
 }
 
 void Bot::execute(){
-    std::cout << _request << "\n";
     if (_currentType == "PRIVMSG"){
         _request.erase(0 , 1);
         std::string name = _request.substr(0, _request.find(" "));
-        int positionInMsg = _request.find(':');
+        unsigned long positionInMsg = _request.find(':');
         if (positionInMsg != _request.npos && positionInMsg != _request.length() - 1){
             _request = _request.substr(positionInMsg + 1);
             if (_request.find("joke") != std::string::npos || _request.find("анекдот") != std::string::npos){
+                std::list<std::string> TotalMessage;
                 std::srand(std::time(NULL));
-                _replymessage = "PRIVMSG " + name + " :" + *Jokes[std::rand() % 2] + "\r\n";
+                std::string *Joke = Jokes[std::rand() % 5];
+                for (size_t i = 0; i < 20 && !Joke[i].empty(); ++i) {
+                    TotalMessage.push_back(" :" + Joke[i] + "\r\n");
+                }
+                if (!TotalMessage.empty()) {
+                    for (std::list<std::string>::iterator i = TotalMessage.begin(); i != TotalMessage.end(); ++i) {
+                        _replymessage += "NOTICE " + name + *i;
+                    }
+                }
             }
         }
     } else if (_currentType == "AUTH"){

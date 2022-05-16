@@ -13,7 +13,7 @@ VPATH	=	sources/
 OBJ_DIR	=	./obj/
 OBJS	=	$(SRCS:.cpp=.o)	\
 
-CPPFLAGS = 
+CPPFLAGS = -Wall -Werror -Wextra
 
 .PHONY	:	all clean fclean re
 
