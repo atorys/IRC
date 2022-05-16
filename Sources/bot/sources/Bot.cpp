@@ -76,6 +76,7 @@ std::string Bot::getRequest() {
 
 void Bot::parse(){
     _request = getRequest();
+    std::cout << _request << "\n";
     if (_request.find("PRIVMSG") != std::string::npos || _request.find("NOTICE") != std::string::npos){
         _currentType = "PRIVMSG";
     } else if (_request.find(":ircserv 375 BOT :- Message of the day -") != std::string::npos) {
@@ -87,6 +88,7 @@ void Bot::parse(){
 }
 
 void Bot::execute(){
+    std::cout << _request << "\n";
     if (_currentType == "PRIVMSG"){
         _request.erase(0 , 1);
         std::string name = _request.substr(0, _request.find(" "));
@@ -95,7 +97,7 @@ void Bot::execute(){
             _request = _request.substr(positionInMsg + 1);
             if (_request.find("joke") != std::string::npos || _request.find("анекдот") != std::string::npos){
                 std::srand(std::time(NULL));
-                _replymessage = "PRIVMSG " + name + " :" + *Jokes[std::rand() % 2] + "\n\r";
+                _replymessage = "PRIVMSG " + name + " :" + *Jokes[std::rand() % 2] + "\r\n";
             }
         }
     } else if (_currentType == "AUTH"){
