@@ -141,7 +141,7 @@ void Server::receive(int client_socket) {
     char msg[buffSize];
 
     bzero(&msg, sizeof(msg));
-    if (recv(client_socket, &msg, buffSize, 0) < 0) {
+    if (recv(client_socket, &msg, buffSize - 1, 0) < 0) {
         std::cerr << "recv() failure" << std::endl;
         exit(EXIT_FAILURE);
     }
