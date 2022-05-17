@@ -56,6 +56,7 @@ protected:
     void	ison(std::vector<std::string>, int);
     void	names(std::vector<std::string>, int);
     void	topic(std::vector<std::string>, int);
+    void	mode(std::vector<std::string>, int);
     void    part(std::vector<std::string>, int);
     void    who(std::vector<std::string>, int){};
     void    bot(std::vector<std::string>, int){};

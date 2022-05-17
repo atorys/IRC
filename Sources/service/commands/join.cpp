@@ -55,7 +55,7 @@ void UsersService::join(std::vector<std::string> args, int client_socket){
                                                          channel->get_topic()));
 
             std::vector<std::string> arg;
-            for (std::vector<User *>::iterator it = channel->get_userlist().begin(); it != channel->get_userlist().end(); ++it) {
+            for (std::vector<User *>::const_iterator it = channel->get_userlist().begin(); it != channel->get_userlist().end(); ++it) {
                 arg.clear();
                 arg.push_back("NAMES");
                 arg.push_back(channel->get_channelname());

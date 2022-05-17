@@ -22,6 +22,7 @@ UsersService::UsersService(const std::string& password, Postman* postman)
     _commands["ISON"] = &UsersService::ison;
     _commands["NAMES"] = &UsersService::names;
     _commands["TOPIC"] = &UsersService::topic;
+    _commands["MODE"] = &UsersService::mode;
     _commands["PART"] = &UsersService::part;
     _commands["WHO"] = &UsersService::who;
     _commands["BOT"] = &UsersService::bot;

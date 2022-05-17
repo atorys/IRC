@@ -52,6 +52,9 @@ class Postman {
                                                         + (oper) + " :0 " + (realname))
 #define RPL_ENDOFWHO(nickname, name)                    (":ircserv 315 " + (nickname) + ' ' + (name) + " :End of /WHO list")
 
+#define RPL_CHANNELMODEIS(nickname, channel, mode)      (":ircserv 324 " + (nickname) + ' ' + (channel) + " :" + (mode))
+#define RPL_UMODEIS(nickname, user)                     " 221 <user mode string>"
+
 #define RPL_QUIT(nickname, message)                     (":ircserv " + (nickname) + " quited :" + (message))
 #define RPL_PRIVMSG(sender, recipient, msg)             (":" + (sender) + " PRIVMSG " + (recipient) + " :"+ (msg))
 #define RPL_JOIN(nickname, channel)                     (":" + (nickname) + " JOIN " + (channel))
