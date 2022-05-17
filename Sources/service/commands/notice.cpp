@@ -34,8 +34,10 @@ void UsersService::notice(std::vector<std::string> args, int client_socket){
 
     } else {
         int replySocket = findUserByNickname(args[1])->get_socket();
-        _postman->sendReply(replySocket, RPL_PRIVMSG(_users[client_socket]->get_nickname(),
+        if (!findUserByNickname(args[1])->has_mode(silence)){
+            _postman->sendReply(replySocket, RPL_PRIVMSG(_users[client_socket]->get_nickname(),
                                                      _users[replySocket]->get_nickname(),
                                                      args[2]));
+        }
     }
 }

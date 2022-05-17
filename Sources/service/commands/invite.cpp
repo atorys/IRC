@@ -6,6 +6,10 @@
         // RPL_INVITING(+)                RPL_AWAY(+)
 
 void    UsersService::invite(std::vector<std::string> args, int client_socket){
+    if (!_users[client_socket]->is_authenticated()) {
+        _postman->sendReply(client_socket, ERR_NOTREGISTERED(_users[client_socket]->get_nickname().empty() ?
+                                                             "*" : _users[client_socket]->get_nickname()));
+    }
     if (args.size() != 3)
         _postman->sendReply(client_socket, ERR_NEEDMOREPARAMS(_users[client_socket]->get_nickname(), args[0]));
     else if (findUserByNickname(args[1]) == nullptr){

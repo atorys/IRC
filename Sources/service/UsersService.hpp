@@ -63,4 +63,5 @@ protected:
     void    who(std::vector<std::string>, int){};
     void    bot(std::vector<std::string>, int){};
     void    invite(std::vector<std::string>, int);
+    void    wallops(std::vector<std::string>, int);
 };

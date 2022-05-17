@@ -17,8 +17,10 @@ void UsersService::ison(std::vector<std::string> args, int client_socket) {
     } else {
         std::string nicknames;
         for (unsigned long  i = 1; i < args.size(); ++i) {
-            if (findUserByNickname(args[i]) != nullptr)
-                nicknames += ' ' + args[i];
+            if (findUserByNickname(args[i]) != nullptr){
+                if (!findUserByNickname(args[i])->has_mode(invisibility)) 
+                    nicknames += ' ' + args[i];
+            }
         }
         _postman->sendReply(client_socket, RPL_ISON(_users[client_socket]->get_nickname(), nicknames));
     }

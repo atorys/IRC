@@ -8,23 +8,23 @@ void    UsersService::changeUserMode(std::vector<std::string> args, int client_s
     if (_users[client_socket]->has_mode(UserOper)){
         User    *user = nullptr;
         user = findUserByNickname(args[1]);
-        if (args[2].find('+')){
-            if (args[2].find('o'))
+        if (args[2].find('+') != std::string::npos){
+            if (args[2].find('o') != std::string::npos)
                 user->set_mode(UserOper);
-            if (args[2].find('w'))
+            if (args[2].find('w') != std::string::npos)
                 user->set_mode(wallopsOff);
-            if (args[2].find('i'))
+            if (args[2].find('i') != std::string::npos)
                 user->set_mode(invisibility);
-            if (args[2].find('s'))
+            if (args[2].find('s') != std::string::npos)
                 user->set_mode(silence);
-        } else if (args[2].find('-')){
-            if (args[2].find('o'))
+        } else if (args[2].find('-') != std::string::npos){
+            if (args[2].find('o') != std::string::npos)
                 user->unset_mode(UserOper);
-            if (args[2].find('w'))
+            if (args[2].find('w') != std::string::npos)
                 user->unset_mode(wallopsOff);
-            if (args[2].find('i'))
+            if (args[2].find('i') != std::string::npos)
                 user->unset_mode(invisibility);
-            if (args[2].find('s'))
+            if (args[2].find('s') != std::string::npos)
                 user->unset_mode(silence);
         }
     }

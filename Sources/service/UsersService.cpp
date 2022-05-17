@@ -27,11 +27,15 @@ UsersService::UsersService(const std::string& password, Postman* postman)
     _commands["WHO"] = &UsersService::who;
     _commands["BOT"] = &UsersService::bot;
     _commands["INVITE"] = &UsersService::invite;
+    _commands["WALLOPS"] = &UsersService::wallops;
 }
 
 void UsersService::addUser(int client_socket, const std::string& host) {
     _users[client_socket] = new User(client_socket, host);
-    _users.begin()->second->set_mode(UserOper);
+    if (_operList.empty() && !_users.empty()){
+        _users.begin()->second->set_mode(UserOper);
+        _operList.push_back(_users.begin()->second);
+    }
     std::cout << GREEN_COL << "[CONNECTION #" << client_socket << ' ' << host << "]\n" << NO_COL;
 }
 
@@ -73,11 +77,15 @@ void UsersService::removeUser(int client_socket) {
     std::cout << "///////////////\n" << NO_COL;
 
     for (std::vector<User *>::iterator start = _operList.begin(); start != _operList.end(); start++){
-        if ((*start) == _users[client_socket]){
+        if ((*start)->get_socket() == _users[client_socket]->get_socket()){
             _operList.erase(start);
             break;
         }
     }
+    if (_operList.empty() && !_users.empty()){
+        _operList.push_back((_users.begin()->second));
+    }
+
     delete _users.at(client_socket);
     _users.erase(client_socket);
 }
@@ -111,12 +119,6 @@ void UsersService::processRequest(std::string request, int client_socket) {
         std::cout << "user " << client_socket << ": " << request;
     else
         std::cout << _users[client_socket]->get_nickname() << ": " << request;
-    if (!_users.empty()){
-        if (_users.begin()->second->is_authenticated()){
-            _users.begin()->second->set_mode(UserOper);
-            _operList.push_back(_users.begin()->second);
-        }
-    }
     std::vector<std::string> arguments = ut::splitForCmd(request);
     if (_commands.find(arguments[0]) != _commands.end()) {
         (this->*_commands[arguments[0]])(arguments, client_socket);
