@@ -20,6 +20,7 @@ class UsersService : public Service {
     Postman*                            _postman;
 
     std::map<int, User*>				_users;
+    std::vector<User *>                 _operList;
     std::map<std::string, commandPtr>   _commands;
     std::vector<Channel *>              _channels;
 
@@ -32,6 +33,7 @@ public:
     void        removeUser(int);
     bool        isConnected(int);
     void        welcomeUser(int);
+    void        changeUserMode(std::vector<std::string>, int);
     User*       findUserByNickname(const std::string&);
 
     void        addChannel(Channel *);
@@ -60,4 +62,5 @@ protected:
     void    part(std::vector<std::string>, int);
     void    who(std::vector<std::string>, int){};
     void    bot(std::vector<std::string>, int){};
+    void    invite(std::vector<std::string>, int);
 };

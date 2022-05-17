@@ -127,6 +127,7 @@ void Server::add() {
         exit(EXIT_FAILURE);
     }
     _service->addUser(client_socket, host);
+    
 }
 
 void Server::remove(std::vector<pollfd>::iterator pollsIter) {

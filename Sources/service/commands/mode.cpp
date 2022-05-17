@@ -4,8 +4,30 @@ void    changeChannelMode() {
 
 }
 
-void    changeUserMode() {
-
+void    UsersService::changeUserMode(std::vector<std::string> args, int client_socket) {
+    if (_users[client_socket]->has_mode(UserOper)){
+        User    *user = nullptr;
+        user = findUserByNickname(args[1]);
+        if (args[2].find('+')){
+            if (args[2].find('o'))
+                user->set_mode(UserOper);
+            if (args[2].find('w'))
+                user->set_mode(wallopsOff);
+            if (args[2].find('i'))
+                user->set_mode(invisibility);
+            if (args[2].find('s'))
+                user->set_mode(silence);
+        } else if (args[2].find('-')){
+            if (args[2].find('o'))
+                user->unset_mode(UserOper);
+            if (args[2].find('w'))
+                user->unset_mode(wallopsOff);
+            if (args[2].find('i'))
+                user->unset_mode(invisibility);
+            if (args[2].find('s'))
+                user->unset_mode(silence);
+        }
+    }
 }
 
 /*
@@ -14,7 +36,20 @@ void    changeUserMode() {
  * @Command: MODE
  * @Parameters: <channel> {[+|-]|o|p|s|i|t|n|b|v} [<limit>] [<user>] [<ban mask>]}
  *              <nickname> {[+|-]|i|w|s|o}
+ *              modes for <channel> i | o | p | l | t;
+ *              modes for <user>    i | s | o | w
+ *              <channel> : i - флаг канала invite-only;
+ *                          o - брать/давать привилегии операторов канала;
+ *                          p - флаг приватности канала;
+ *                          l - установка ограничения на количество пользователей;
+ *                          t - при установке этого флага, менять топик могут только операторы;
+ *              <user> :    i - делает пользователя невидимым;
+ *                          s – пользователь (не)получает NOTICE сообщения;
+ *                          o – флаг IRC-оператора;
+ *                          w – пользователь (не)получает WALLOPS сообщения;
  */
+
+
 void UsersService::mode(std::vector<std::string> args, int client_socket) {
     if (!_users[client_socket]->is_authenticated()) {
         _postman->sendReply(client_socket, ERR_NOTREGISTERED(_users[client_socket]->get_nickname().empty() ?
@@ -32,7 +67,7 @@ void UsersService::mode(std::vector<std::string> args, int client_socket) {
             _postman->sendReply(client_socket, RPL_CHANNELMODEIS(_users[client_socket]->get_nickname(), channel->get_channelname(), channel->show_mode()));
 
         } else if (user) {
-            changeUserMode();
+            changeUserMode(args, client_socket);
             _postman->sendReply(client_socket, RPL_UMODEIS(_users[client_socket]->get_nickname(), user->get_nickname()));
 
         } else {

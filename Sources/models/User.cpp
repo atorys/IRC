@@ -31,3 +31,31 @@ void User::set_awayMessage(const std::string &awayMsg) { this->_awayMessage = aw
 std::string User::get_fullname() const {
     return (_nickname + '!' + _username + '@' + _host);
 }
+
+void User::set_mode(UserMode flag) {
+    _modes |= flag;
+}
+
+void User::unset_mode(UserMode flag) {
+    _modes &= (~flag);
+}
+
+bool User::has_mode(UserMode flag) const {
+    return ((_modes & flag) == flag);
+}
+
+// {[+|-]i|s|o|w}
+std::string User::show_mode() const {
+    std::string show;
+    if (!has_mode(UserNone))
+        show += '+';
+    if (has_mode(UserOper))
+        show += 'o';
+    if (has_mode(wallopsOff))
+        show += 'w';
+    if (has_mode(silence))
+        show += 's';
+    if (has_mode(invisibility))
+        show += 'i';
+    return show;
+}
