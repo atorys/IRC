@@ -18,7 +18,6 @@ class UsersService : public Service {
 
     const std::string&					_password;
     Postman*                            _postman;
-
     std::map<int, User*>				_users;
     std::map<std::string, commandPtr>   _commands;
     std::vector<Channel *>              _channels;
@@ -64,5 +63,5 @@ protected:
     void    who(std::vector<std::string>, int){};
     void    bot(std::vector<std::string>, int){};
     void    invite(std::vector<std::string>, int);
-//    void    wallops(std::vector<std::string>, int);
+    void    wallops(std::vector<std::string>, int);
 };

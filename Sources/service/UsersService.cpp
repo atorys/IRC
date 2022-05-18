@@ -27,7 +27,7 @@ UsersService::UsersService(const std::string& password, Postman* postman)
     _commands["WHO"] = &UsersService::who;
     _commands["BOT"] = &UsersService::bot;
     _commands["INVITE"] = &UsersService::invite;
-//    _commands["WALLOPS"] = &UsersService::wallops;
+   _commands["WALLOPS"] = &UsersService::wallops;
 }
 
 void UsersService::addUser(int client_socket, const std::string& host) {

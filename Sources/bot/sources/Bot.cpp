@@ -184,14 +184,6 @@ void Bot::getMessage(){
 }
 
 std::string Bot::getRequest() {
-    // std::string::size_type index = _incomeBuff.find("\n\r");
-    // if (!_incomeBuff.empty()) {
-    //     std::string::size_type index = _incomeBuff.find("\n\r") + 1;
-    //     std::string request = _incomeBuff.substr(0, index);
-    //     _incomeBuff.erase(0, index);
-    //     return request;
-    // }
-    // return "!!!!!";
     std::string::size_type index = _incomeBuff.find("\n") + 1;
     std::string request = _incomeBuff.substr(0, index);
     _incomeBuff.erase(0, index);
