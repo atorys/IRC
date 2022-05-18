@@ -20,7 +20,6 @@ class UsersService : public Service {
     Postman*                            _postman;
 
     std::map<int, User*>				_users;
-    std::vector<User *>                 _operList;
     std::map<std::string, commandPtr>   _commands;
     std::vector<Channel *>              _channels;
 
@@ -33,12 +32,14 @@ public:
     void        removeUser(int);
     bool        isConnected(int);
     void        welcomeUser(int);
-    void        changeUserMode(std::vector<std::string>, int);
     User*       findUserByNickname(const std::string&);
 
     void        addChannel(Channel *);
     void        removeEmptyChannels();
     Channel*    findChannelByName(const std::string&);
+
+    void        addOper(int);
+    void        checkOper();
 
     void        processRequest(std::string request, int client_socket);
 
@@ -63,5 +64,5 @@ protected:
     void    who(std::vector<std::string>, int){};
     void    bot(std::vector<std::string>, int){};
     void    invite(std::vector<std::string>, int);
-    void    wallops(std::vector<std::string>, int);
+//    void    wallops(std::vector<std::string>, int);
 };

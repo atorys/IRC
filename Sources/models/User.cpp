@@ -47,8 +47,6 @@ bool User::has_mode(UserMode flag) const {
 // {[+|-]i|s|o|w}
 std::string User::show_mode() const {
     std::string show;
-    if (!has_mode(UserNone))
-        show += '+';
     if (has_mode(UserOper))
         show += 'o';
     if (has_mode(wallopsOff))
@@ -57,5 +55,5 @@ std::string User::show_mode() const {
         show += 's';
     if (has_mode(invisibility))
         show += 'i';
-    return show;
+    return show.empty() ? "" : '+' + show;
 }

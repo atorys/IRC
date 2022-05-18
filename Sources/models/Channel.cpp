@@ -10,10 +10,16 @@ Channel::Channel(std::string const & channelName, Postman *postman):
 void Channel::addUser(User *user) {
     _userList.push_back(user);
     if (_operList.empty())
+        addOper(user);
+}
+
+void Channel::addOper(User *user) {
+    if (!is_operator(user))
         _operList.push_back(user);
 }
 
 const std::string &Channel::get_topic() const               { return _topic; }
+int Channel::get_limit() const                              { return _limit; }
 const std::string &Channel::get_channelname() const         { return _channelName; }
 const std::vector<User *> &Channel::get_userlist() const    { return _userList; }
 const std::vector<User *> &Channel::get_operList() const    { return _operList; }
@@ -33,6 +39,20 @@ User * Channel::get_user_by_nickname(std::string nickname){
     return nullptr;
 }
 
+
+void Channel::removeOper(User *user) {
+    std::vector<User *>::iterator start = _operList.begin();
+    while (start != _operList.end()) {
+        if ((*start) == user) {
+            _operList.erase(start);
+            break;
+        }
+        start++;
+    }
+    if (_operList.empty() && !_userList.empty())
+        addOper(_userList[0]);
+}
+
 void Channel::removeUserFromChannel(User *user){
     std::vector<User *>::iterator start = _userList.begin();
     while (start != _userList.end()) {
@@ -42,16 +62,7 @@ void Channel::removeUserFromChannel(User *user){
         }
         start++;
     }
-    start = _operList.begin();
-    while (start != _operList.end()) {
-        if ((*start) == user) {
-            _operList.erase(start);
-            break;
-        }
-        start++;
-    }
-    if (_operList.empty() && !_userList.empty())
-        _operList.push_back(_userList[0]);
+    removeOper(user);
 }
 void Channel::sendAll(const std::string& msg, User *skippedUser) {
     for (std::vector<User *>::iterator start = _userList.begin(); start != _userList.end(); start++){
@@ -62,6 +73,10 @@ void Channel::sendAll(const std::string& msg, User *skippedUser) {
 
 void Channel::set_topic(const std::string &topic) {
     this->_topic = topic;
+}
+
+void Channel::set_limit(int limit) {
+    this->_limit = limit;
 }
 
 bool Channel::is_in_channel(User *user) const {
@@ -105,18 +120,14 @@ bool Channel::has_mode(Mode flag) const {
 // {[+|-]|o|p|s|i|t|n|b|v}
 std::string Channel::show_mode() const {
     std::string show;
-    if (!has_mode(none))
-        show += '+';
     if (has_mode(oper))
         show += 'o';
-    if (has_mode(priv))
-        show += 'p';
     if (has_mode(invite_only))
         show += 'i';
     if (has_mode(topic))
         show += 't';
     if (has_mode(limited))
-        show += ' ' + std::to_string(_maxUserCount);
+        show += ' ' + std::to_string(_limit);
 
-    return show;
+    return show.empty() ? "" : '+' + show;
 }
