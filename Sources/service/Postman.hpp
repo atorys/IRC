@@ -54,6 +54,8 @@ class Postman {
 
 #define RPL_CHANNELMODEIS(nickname, channel, mode)      (":ircserv 324 " + (nickname) + ' ' + (channel) + " :" + (mode))
 #define RPL_UMODEIS(nickname, user, mode)               (":ircserv 221 " + (nickname) + ' ' + (user) + " :" + (mode))
+#define RPL_YOUREOPER(nickname)                         (":ircserv 381 " + (nickname) + " :You are now an IRC operator")
+#define RPL_INVITE(nickname, nicknameInvited, channel)  (":ircserv 341 " + (nickname) + ' ' + (nicknameInvited) + " :" + (channel))
 
 #define RPL_QUIT(nickname, message)                     (":ircserv " + (nickname) + " quited :" + (message))
 #define RPL_PRIVMSG(sender, recipient, msg)             (":" + (sender) + " PRIVMSG " + (recipient) + " :"+ (msg))
@@ -94,3 +96,6 @@ class Postman {
 
 #define ERR_UMODEUNKNOWNFLAG(nickname)                  (":ircserv 501 " + (nickname) + " :Unknown MODE flag")
 #define ERR_USERSDONTMATCH(nickname)                    (":ircserv 502 " + (nickname) + " :Cant change mode for other users")
+#define ERR_CHANNELISFULL(nickname, channel)            (":ircserv 471 " + (nickname) + ' ' + (channel) + " :Cannot join channel (+l)")
+#define ERR_INVITEONLYCHAN(nickname, channel)           (":ircserv 473 " + (nickname) + ' ' + (channel) + " :Cannot join channel (+i)")
+#define ERR_NOPRIVILEGES(nickname)                      (":ircserv 481 " + (nickname) + " :Permission Denied- You're not an IRC operator")

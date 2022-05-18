@@ -33,7 +33,14 @@ void UsersService::topic(std::vector<std::string> args, int client_socket) {
                                                              channel->get_topic()));
 
         } else {
-            channel->set_topic(args[2]);
+            if (channel->has_mode(protectedTopic) && !channel->is_operator(_users[client_socket]))
+                _postman->sendReply(client_socket, ERR_CHANOPRIVSNEEDED(_users[client_socket]->get_nickname(), channel->get_channelname()));
+            else {
+                channel->set_topic(args[2]);
+                _postman->sendReply(client_socket, RPL_TOPIC(_users[client_socket]->get_nickname(),
+                                                             channel->get_channelname(),
+                                                             channel->get_topic()));
+            }
         }
     }
 }

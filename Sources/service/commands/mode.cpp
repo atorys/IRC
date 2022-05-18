@@ -15,7 +15,7 @@ std::string     changeChannelMode(User *oper, Channel *channel, const std::strin
             if (modes.find('i') != std::string::npos)
                 channel->set_mode(invite_only);
             if (modes.find('t') != std::string::npos)
-                channel->set_mode(topic);
+                channel->set_mode(protectedTopic);
             if (modes.find('o') != std::string::npos) {
                 User *user = nullptr;
                 if (args.empty()) {
@@ -30,14 +30,12 @@ std::string     changeChannelMode(User *oper, Channel *channel, const std::strin
             }
 
         } else if (modes.find('-') != std::string::npos){
-            if (modes.find('l') != std::string::npos) {
+            if (modes.find('l') != std::string::npos)
                 channel->unset_mode(limited);
-                channel->sendAll(RPL_MODE(oper->get_fullname(), channel->get_channelname(), "-l"), nullptr);
-            }
             if (modes.find('i') != std::string::npos)
                 channel->unset_mode(invite_only);
             if (modes.find('t') != std::string::npos)
-                channel->unset_mode(topic);
+                channel->unset_mode(protectedTopic);
             if (modes.find('o') != std::string::npos) {
                 User *user = nullptr;
                 if (args.empty()) {
@@ -91,7 +89,7 @@ std::string     changeUserMode(User *oper, User *user, const std::string& modes)
 }
 
 /*
- * Используется для изменения или просмотра топика канала.
+ * Используется для изменения или просмотра флагов канала.
  *
  * @Command: MODE
  * @Parameters: <channel> {[+|-]|o|p|s|i|t|n|b|v} [<limit>] [<user>] [<ban mask>]}
@@ -130,8 +128,11 @@ void UsersService::mode(std::vector<std::string> args, int client_socket) {
                 _postman->sendReply(client_socket, RPL_CHANNELMODEIS(_users[client_socket]->get_nickname(), channel->get_channelname(), channel->show_mode()));
 
         } else if (user) {
-            if (args.size() == 3)
+            if (args.size() == 3) {
                 _postman->sendReply(client_socket, changeUserMode(_users.at(client_socket), user, args[2]));
+                if (args[2].find("+o") != std::string::npos && user->has_mode(UserOper))
+                    _postman->sendReply(user->get_socket(), RPL_YOUREOPER(user->get_fullname()));
+            }
             else
                 _postman->sendReply(client_socket, RPL_UMODEIS(_users[client_socket]->get_nickname(), user->get_nickname(), user->show_mode()));
 

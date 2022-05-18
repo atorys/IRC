@@ -41,6 +41,8 @@ void UsersService::addOper(int client_socket) {
     _users[client_socket]->set_mode(UserOper);
     std::cout << GREEN_COL << "[OPERATOR #" << (_users[client_socket]->is_authenticated() ?
     _users[client_socket]->get_nickname() : std::to_string(client_socket)) << "]\n" << NO_COL;
+    if (_users[client_socket]->is_authenticated())
+        _postman->sendReply(client_socket, RPL_YOUREOPER(_users[client_socket]->get_fullname()));
 }
 
 void UsersService::addChannel(Channel *channel) {
@@ -140,6 +142,8 @@ void UsersService::welcomeUser(int client_socket) {
     _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), " .      .   . .   .   .   . .  +   .    .            +"));
     _postman->sendReply(client_socket, RPL_ENDOFMOTD(_users[client_socket]->get_nickname()));
     _postman->sendReply(client_socket, RPL_WELCOME(_users[client_socket]->get_fullname()));
+    if (_users[client_socket]->has_mode(UserOper))
+        _postman->sendReply(client_socket, RPL_YOUREOPER(_users[client_socket]->get_fullname()));
 }
 
 

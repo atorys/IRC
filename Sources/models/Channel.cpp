@@ -124,10 +124,10 @@ std::string Channel::show_mode() const {
         show += 'o';
     if (has_mode(invite_only))
         show += 'i';
-    if (has_mode(topic))
+    if (has_mode(protectedTopic))
         show += 't';
     if (has_mode(limited))
-        show += ' ' + std::to_string(_limit);
+        show += "l " + std::to_string(_limit);
 
     return show.empty() ? "" : '+' + show;
 }
