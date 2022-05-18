@@ -4,17 +4,27 @@
 
 Channel::Channel(std::string const & channelName, Postman *postman):
                 _postman(postman),
-                _channelName(channelName) {}
+                _channelName(channelName),
+                _modes(none) {}
 
-void Channel::addUser(User *user){
+void Channel::addUser(User *user) {
     _userList.push_back(user);
-//    sendAll(user->get_nickname() + " join to channel " + _channelName + " eZ clap!");
+    if (_operList.empty())
+        addOper(user);
 }
 
-const std::string &Channel::get_topic() const{ return _topic; }
-const std::string &Channel::get_channelname() const { return _channelName; }
-std::vector<User *> &Channel::get_userlist(){ return _userList; }
-int Channel::get_count_of_users(){ return _userList.empty() ? 0 : (int)_userList.size(); }
+void Channel::addOper(User *user) {
+    if (!is_operator(user))
+        _operList.push_back(user);
+}
+
+const std::string &Channel::get_topic() const               { return _topic; }
+int Channel::get_limit() const                              { return _limit; }
+const std::string &Channel::get_channelname() const         { return _channelName; }
+const std::vector<User *> &Channel::get_userlist() const    { return _userList; }
+const std::vector<User *> &Channel::get_operList() const    { return _operList; }
+
+int Channel::get_count_of_users() { return (int)_userList.size(); }
 
 
 User * Channel::get_user_by_nickname(std::string nickname){
@@ -29,12 +39,18 @@ User * Channel::get_user_by_nickname(std::string nickname){
     return nullptr;
 }
 
-bool Channel::is_in_channel(User *user){
-    for (std::vector<User *>::iterator start = _userList.begin(); start != _userList.end(); start++){
-        if (user == (*start))
-            return true;
+
+void Channel::removeOper(User *user) {
+    std::vector<User *>::iterator start = _operList.begin();
+    while (start != _operList.end()) {
+        if ((*start) == user) {
+            _operList.erase(start);
+            break;
+        }
+        start++;
     }
-    return false;
+    if (_operList.empty() && !_userList.empty())
+        addOper(_userList[0]);
 }
 
 void Channel::removeUserFromChannel(User *user){
@@ -46,8 +62,8 @@ void Channel::removeUserFromChannel(User *user){
         }
         start++;
     }
+    removeOper(user);
 }
-
 void Channel::sendAll(const std::string& msg, User *skippedUser) {
     for (std::vector<User *>::iterator start = _userList.begin(); start != _userList.end(); start++){
         if (*start != skippedUser)
@@ -57,4 +73,61 @@ void Channel::sendAll(const std::string& msg, User *skippedUser) {
 
 void Channel::set_topic(const std::string &topic) {
     this->_topic = topic;
+}
+
+void Channel::set_limit(int limit) {
+    this->_limit = limit;
+}
+
+bool Channel::is_in_channel(User *user) const {
+    for (std::vector<User *>::const_iterator start = _userList.begin(); start != _userList.end(); start++){
+        if (user == (*start))
+            return true;
+    }
+    return false;
+}
+
+bool Channel::is_operator(User *user) const {
+    for (std::vector<User *>::const_iterator start = _operList.begin(); start != _operList.end(); start++) {
+        if (user == (*start))
+            return true;
+    }
+    return false;
+}
+
+// bool Channel::is_invited(User * user){
+//     std::vector<User *>::iterator start = _inviteList.begin();
+//     while (start != _inviteList.end()){
+//         if ((*start)->get_socket() == user->get_socket())
+//             return true;
+//         start++;
+//     }
+//     return false;
+// }
+
+void Channel::set_mode(Mode flag) {
+    _modes |= flag;
+}
+
+void Channel::unset_mode(Mode flag) {
+    _modes &= (~flag);
+}
+
+bool Channel::has_mode(Mode flag) const {
+    return ((_modes & flag) == flag);
+}
+
+// {[+|-]|o|p|s|i|t|n|b|v}
+std::string Channel::show_mode() const {
+    std::string show;
+    if (has_mode(oper))
+        show += 'o';
+    if (has_mode(invite_only))
+        show += 'i';
+    if (has_mode(protectedTopic))
+        show += 't';
+    if (has_mode(limited))
+        show += "l " + std::to_string(_limit);
+
+    return show.empty() ? "" : '+' + show;
 }

@@ -48,6 +48,19 @@ void UsersService::join(std::vector<std::string> args, int client_socket){
                                                                      channel->get_channelname()));
                 continue;
             }
+
+            if (channel->has_mode(limited) && channel->get_count_of_users() == channel->get_limit()) {
+                _postman->sendReply(client_socket, ERR_CHANNELISFULL(_users[client_socket]->get_nickname(), channel->get_channelname()));
+                continue;
+
+            }
+
+            if (channel->has_mode(invite_only)) {
+                _postman->sendReply(client_socket, ERR_INVITEONLYCHAN(_users[client_socket]->get_nickname(), channel->get_channelname()));
+                continue;
+
+            }
+
             channel->addUser(_users.at(client_socket));
             channel->sendAll(RPL_JOIN(_users[client_socket]->get_fullname(), channel->get_channelname()), nullptr);
             _postman->sendReply(client_socket, RPL_TOPIC(_users[client_socket]->get_nickname(),
@@ -55,7 +68,7 @@ void UsersService::join(std::vector<std::string> args, int client_socket){
                                                          channel->get_topic()));
 
             std::vector<std::string> arg;
-            for (std::vector<User *>::iterator it = channel->get_userlist().begin(); it != channel->get_userlist().end(); ++it) {
+            for (std::vector<User *>::const_iterator it = channel->get_userlist().begin(); it != channel->get_userlist().end(); ++it) {
                 arg.clear();
                 arg.push_back("NAMES");
                 arg.push_back(channel->get_channelname());

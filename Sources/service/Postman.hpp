@@ -52,11 +52,18 @@ class Postman {
                                                         + (oper) + " :0 " + (realname))
 #define RPL_ENDOFWHO(nickname, name)                    (":ircserv 315 " + (nickname) + ' ' + (name) + " :End of /WHO list")
 
+#define RPL_CHANNELMODEIS(nickname, channel, mode)      (":ircserv 324 " + (nickname) + ' ' + (channel) + " :" + (mode))
+#define RPL_UMODEIS(nickname, user, mode)               (":ircserv 221 " + (nickname) + ' ' + (user) + " :" + (mode))
+#define RPL_YOUREOPER(nickname)                         (":ircserv 381 " + (nickname) + " :You are now an IRC operator")
+#define RPL_INVITE(nickname, nicknameInvited, channel)  (":ircserv 341 " + (nickname) + ' ' + (nicknameInvited) + " :" + (channel))
+
 #define RPL_QUIT(nickname, message)                     (":ircserv " + (nickname) + " quited :" + (message))
 #define RPL_PRIVMSG(sender, recipient, msg)             (":" + (sender) + " PRIVMSG " + (recipient) + " :"+ (msg))
 #define RPL_JOIN(nickname, channel)                     (":" + (nickname) + " JOIN " + (channel))
 #define RPL_PART(nickname, channel, reason)             (":" + (nickname) + " PART " + (channel) + " :" + (reason))
+#define RPL_INVITING(nickname, nicknameInvited, channel)(":" + (nickname) + " INVITE " + (nicknameInvited) + " :" + (channel))
 #define RPL_KICK(nickname, channel, user, reason)       (":" + (nickname) + " KICK " + (channel) + ' ' + (user) + " :" + (reason))
+#define RPL_MODE(nickname, user, changes)               (":" + (nickname) + " MODE " + (user) + " :" + (changes))
 
 //__ERRORS_____________________________________________________
 #define ERR_NOSUCHNICK(nickname, nick)                  (":ircserv 401 " + (nickname) + ' ' + (nick) + " :No such nick/channel")
@@ -64,9 +71,9 @@ class Postman {
 #define ERR_NOORIGIN(nickname)                          (":ircserv 409 " + (nickname) + " :No origin specified")
 #define ERR_CANNOTSENDTOCHAN(channel)                   (":ircserv 404 " + (channel) + " :Cannot send to channel")
 #define ERR_WASNOSUCHNICK(channel)                      (":ircserv 406 " + (channel) + " :There was no such nickname")
-#define ERR_TOOMANYTARGETS(nickname, target)            (":ircserv 407 " + (nickname) + ' ' + (target) + " :Duplicate recipients. No message delivered)"
+#define ERR_TOOMANYTARGETS(nickname, target)            (":ircserv 407 " + (nickname) + ' ' + (target) + " :Duplicate recipients. No message delivered")
 #define ERR_UNKNOWNCOMMAND(nickname, command)           (":ircserv 421 " + (nickname) + ' ' + (command) + " :Unknown command")
-#define ERR_CHANOPRIVSNEEDED(nickname, channel)         (":ircserv 482 " + (nickname) + ' ' + (channel) + ":You're not channel operator")
+#define ERR_CHANOPRIVSNEEDED(nickname, channel)         (":ircserv 482 " + (nickname) + ' ' + (channel) + " :You're not channel operator")
 //NICK
 #define ERR_NONICKNAMEGIVEN(nickname)                   (":ircserv 431 " + (nickname) + " :No nickname given")
 #define ERR_ERRONEUSNICKNAME(nickname, nick)            (":ircserv 432 " + (nickname) + ' ' + (nick) + " :Erroneus nickname")
@@ -86,3 +93,9 @@ class Postman {
 //PRIVMSG
 #define ERR_NORECIPIENT(nickname, command)      (":ircserv 411 " + (nickname) + " :No recipient given " + (command))
 #define ERR_NOTEXTTOSEND(nickname)              (":ircserv 421 " + (nickname) + " :No text to send")
+
+#define ERR_UMODEUNKNOWNFLAG(nickname)                  (":ircserv 501 " + (nickname) + " :Unknown MODE flag")
+#define ERR_USERSDONTMATCH(nickname)                    (":ircserv 502 " + (nickname) + " :Cant change mode for other users")
+#define ERR_CHANNELISFULL(nickname, channel)            (":ircserv 471 " + (nickname) + ' ' + (channel) + " :Cannot join channel (+l)")
+#define ERR_INVITEONLYCHAN(nickname, channel)           (":ircserv 473 " + (nickname) + ' ' + (channel) + " :Cannot join channel (+i)")
+#define ERR_NOPRIVILEGES(nickname)                      (":ircserv 481 " + (nickname) + " :Permission Denied- You're not an IRC operator")

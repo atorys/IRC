@@ -23,7 +23,7 @@ void UsersService::kick(std::vector<std::string> args, int client_socket) {
         else if (!channel->is_in_channel(user)) {
             _postman->sendReply(client_socket, ERR_USERNOTINCHANNEL(_users[client_socket]->get_nickname(), user->get_nickname(), args[1]));
 
-        } else if (channel->get_userlist()[0]->get_socket() != client_socket) {
+        } else if (!channel->is_operator(_users[client_socket])) {
             _postman->sendReply(client_socket, ERR_CHANOPRIVSNEEDED(_users[client_socket]->get_nickname(), args[1]));
 
         } else {

@@ -6,6 +6,14 @@
 
 #include "iostream"
 
+enum UserMode {
+    UserNone = 0,					// 0000000000
+    invisibility = 1 << 0,          // 0000000001
+    silence = 1 << 1,          		// 0000000010
+    UserOper = 1 << 2,				// 0000000100
+    wallopsOff = 1 << 3,       		// 0000001000
+};
+
 class User {
 	private:
 		const int		_socket;
@@ -14,8 +22,10 @@ class User {
 		std::string		_realname;
 		bool 			_registred;
 		bool 			_connected;
+		int             _modes;
         std::string     _host;
         std::string     _awayMessage;
+
 
 	public:
 		User(int, const std::string&);
@@ -38,4 +48,10 @@ class User {
 		void 				set_username(const std::string&);
 		void				set_realname(const std::string&);
         void                set_awayMessage(const std::string&);
+
+		//MODES
+		void                            set_mode(UserMode);
+        void                            unset_mode(UserMode);
+        bool                            has_mode(UserMode) const;
+        std::string                     show_mode() const;
 };

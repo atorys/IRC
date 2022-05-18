@@ -19,7 +19,7 @@ void UsersService::privmsg(std::vector<std::string> args, int client_socket){
                 _postman->sendReply(client_socket, ERR_NOTEXTTOSEND(_users[client_socket]->get_nickname()));
             }
         } else {
-            _postman->sendReply(client_socket, ERR_TOOMANYTARGETS(_users[client_socket]->get_nickname(), args[1])));
+            _postman->sendReply(client_socket, ERR_TOOMANYTARGETS(_users[client_socket]->get_nickname(), args[1]));
         }
 
     } else if (findUserByNickname(args[1]) == nullptr && findChannelByName(args[1]) == nullptr){

@@ -22,14 +22,27 @@ UsersService::UsersService(const std::string& password, Postman* postman)
     _commands["ISON"] = &UsersService::ison;
     _commands["NAMES"] = &UsersService::names;
     _commands["TOPIC"] = &UsersService::topic;
+    _commands["MODE"] = &UsersService::mode;
     _commands["PART"] = &UsersService::part;
     _commands["WHO"] = &UsersService::who;
     _commands["BOT"] = &UsersService::bot;
+    _commands["INVITE"] = &UsersService::invite;
+   _commands["WALLOPS"] = &UsersService::wallops;
 }
 
 void UsersService::addUser(int client_socket, const std::string& host) {
     _users[client_socket] = new User(client_socket, host);
     std::cout << GREEN_COL << "[CONNECTION #" << client_socket << ' ' << host << "]\n" << NO_COL;
+    checkOper();
+}
+
+
+void UsersService::addOper(int client_socket) {
+    _users[client_socket]->set_mode(UserOper);
+    std::cout << GREEN_COL << "[OPERATOR #" << (_users[client_socket]->is_authenticated() ?
+    _users[client_socket]->get_nickname() : std::to_string(client_socket)) << "]\n" << NO_COL;
+    if (_users[client_socket]->is_authenticated())
+        _postman->sendReply(client_socket, RPL_YOUREOPER(_users[client_socket]->get_fullname()));
 }
 
 void UsersService::addChannel(Channel *channel) {
@@ -61,23 +74,19 @@ void UsersService::removeUser(int client_socket) {
         }
     }
     removeEmptyChannels();
-
-    std::cout << GREY_COL;
-    if (_users[client_socket]->get_nickname().empty())
-        std::cout << "user " << client_socket << " just left\n";
-    else
-        std::cout << _users[client_socket]->get_nickname() << " just left\n";
-    std::cout << "///////////////\n" << NO_COL;
-
     delete _users.at(client_socket);
     _users.erase(client_socket);
+    checkOper();
+
+    std::cout << GREY_COL << "user #" << client_socket << " just left\n" << "///////////////\n" << NO_COL;
 }
 
 bool UsersService::isConnected(int client_socket) {
     return _users[client_socket]->is_connected();
 }
 
-User *UsersService::findUserByNickname(const std::string& nickname) {
+User *UsersService::findUserByNickname(const std::string& nickname
+) {
     std::map<int, User*>::iterator start;
     for (start = _users.begin(); start != _users.end(); start++) {
         if (start->second->get_nickname() == nickname) {
@@ -109,6 +118,7 @@ void UsersService::processRequest(std::string request, int client_socket) {
         _postman->sendReply(client_socket, ERR_UNKNOWNCOMMAND(_users[client_socket]->get_nickname(), arguments[0]));
     }
     removeEmptyChannels();
+    checkOper();
 }
 
 void UsersService::welcomeUser(int client_socket) {
@@ -132,4 +142,12 @@ void UsersService::welcomeUser(int client_socket) {
     _postman->sendReply(client_socket, RPL_MOTD(_users[client_socket]->get_nickname(), " .      .   . .   .   .   . .  +   .    .            +"));
     _postman->sendReply(client_socket, RPL_ENDOFMOTD(_users[client_socket]->get_nickname()));
     _postman->sendReply(client_socket, RPL_WELCOME(_users[client_socket]->get_fullname()));
+    if (_users[client_socket]->has_mode(UserOper))
+        _postman->sendReply(client_socket, RPL_YOUREOPER(_users[client_socket]->get_fullname()));
+}
+
+
+void UsersService::checkOper() {
+    if (!_users.empty() && !_users.begin()->second->has_mode(UserOper))
+        addOper(_users.begin()->first);
 }

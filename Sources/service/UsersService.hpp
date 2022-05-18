@@ -18,7 +18,6 @@ class UsersService : public Service {
 
     const std::string&					_password;
     Postman*                            _postman;
-
     std::map<int, User*>				_users;
     std::map<std::string, commandPtr>   _commands;
     std::vector<Channel *>              _channels;
@@ -38,6 +37,9 @@ public:
     void        removeEmptyChannels();
     Channel*    findChannelByName(const std::string&);
 
+    void        addOper(int);
+    void        checkOper();
+
     void        processRequest(std::string request, int client_socket);
 
 protected:
@@ -56,7 +58,10 @@ protected:
     void	ison(std::vector<std::string>, int);
     void	names(std::vector<std::string>, int);
     void	topic(std::vector<std::string>, int);
+    void	mode(std::vector<std::string>, int);
     void    part(std::vector<std::string>, int);
     void    who(std::vector<std::string>, int){};
     void    bot(std::vector<std::string>, int){};
+    void    invite(std::vector<std::string>, int);
+    void    wallops(std::vector<std::string>, int);
 };
