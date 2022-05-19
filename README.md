@@ -1,9 +1,9 @@
 # IRC server
 
-An Internet Relay Chat server in C++ 98 based on rfc1459 standard.  
-Сервер на базе IRC протокола для обмена сообщениями.  
+**An Internet Relay Chat server in C++ 98 based on rfc1459 standard.  
+Сервер на базе IRC протокола для обмена сообщениями.**
 
-<img src="https://media.giphy.com/media/xT1XGwtY71kMjBkORi/giphy.gif" width="280"  alt="channel"/>
+<img src="https://media.giphy.com/media/xT1XGwtY71kMjBkORi/giphy.gif" width="300"  alt="channel"/>
 
 ### Supported clients :
 - Netcat 
@@ -17,7 +17,6 @@ Use **make** rule to compile the program. Run it with port and password
 make && ./ircserv [port] [password]
 ``` 
 
----
 
 Bot running
 ```
