@@ -1,4 +1,4 @@
-# IRC server
+![header](https://capsule-render.vercel.app/api?type=rect&color=FFCC11&height=40&section=header&fontSize=30&text=IRC%20server&fontColor=00000&fontAlign=12)
 
 **An Internet Relay Chat server in C++ 98 based on rfc1459 standard.  
 Сервер на базе IRC протокола для обмена сообщениями.**
