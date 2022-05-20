@@ -95,16 +95,6 @@ bool Channel::is_operator(User *user) const {
     return false;
 }
 
-// bool Channel::is_invited(User * user){
-//     std::vector<User *>::iterator start = _inviteList.begin();
-//     while (start != _inviteList.end()){
-//         if ((*start)->get_socket() == user->get_socket())
-//             return true;
-//         start++;
-//     }
-//     return false;
-// }
-
 void Channel::set_mode(Mode flag) {
     _modes |= flag;
 }

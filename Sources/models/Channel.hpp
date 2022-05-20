@@ -56,5 +56,4 @@ class Channel {
         void                            unset_mode(Mode);
         bool                            has_mode(Mode) const;
         std::string                     show_mode() const;
-        // bool                            is_invited(User * user);
 };

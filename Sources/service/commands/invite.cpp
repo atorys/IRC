@@ -1,10 +1,5 @@
 #include "../UsersService.hpp"
 
-        // ERR_NEEDMOREPARAMS(+)         ERR_NOSUCHNICK(+)
-        // ERR_NOTONCHANNEL(+)            ERR_USERONCHANNEL(+)
-        // ERR_CHANOPRIVSNEEDED - хз, расскажу, лень писать(+)
-        // RPL_INVITING(+)                RPL_AWAY(+)
-
 void    UsersService::invite(std::vector<std::string> args, int client_socket){
     if (!_users[client_socket]->is_authenticated()) {
         _postman->sendReply(client_socket, ERR_NOTREGISTERED(_users[client_socket]->get_nickname().empty() ?
